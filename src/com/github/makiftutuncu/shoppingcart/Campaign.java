@@ -23,54 +23,17 @@ public class Campaign {
         return new Campaign(category, numberOfItems, 0, rate, DiscountType.Rate);
     }
 
-    public Category getCategory() {
+    public Category category() {
         return category;
     }
 
-    public void setCategory(Category category) {
-        // TODO: Validate
-        this.category = category;
-    }
-
-    public int getNumberOfItems() {
+    public int numberOfItems() {
         return numberOfItems;
     }
 
-    public void setNumberOfItems(int numberOfItems) {
-        // TODO: Validate
-        this.numberOfItems = numberOfItems;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        // TODO: Validate
-        this.amount = amount;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        // TODO: Validate
-        this.rate = rate;
-    }
-
-    public DiscountType getDiscountType() {
-        return discountType;
-    }
-
-    public void setDiscountType(DiscountType discountType) {
-        // TODO: Validate
-        this.discountType = discountType;
-    }
-
-    public int discountFor(Product product) {
+    public int discountFor(int totalAmount) {
         switch (discountType) {
-            case Rate:   return ((int) (product.getPrice() * rate));
+            case Rate:   return ((int) (totalAmount * rate));
             case Amount: return amount;
             default:     return 0;
         }
@@ -78,9 +41,34 @@ public class Campaign {
 
     @Override public String toString() {
         switch (discountType) {
-            case Rate:   return String.format("%.0f%% off for %d or more products in %s", rate * 100, numberOfItems, category.getTitle());
-            case Amount: return String.format("%s off for %d or more products in %s", MoneyPrinter.print(amount), numberOfItems, category.getTitle());
+            case Rate:   return String.format("%.0f%% for %d or more %s", rate * 100, numberOfItems, category.title());
+            case Amount: return String.format("%s off for %d or more %s", MoneyPrinter.print(amount), numberOfItems, category.title());
             default:     return "Campaign";
         }
+    }
+
+    private void setCategory(Category category) {
+        // TODO: Validate
+        this.category = category;
+    }
+
+    private void setNumberOfItems(int numberOfItems) {
+        // TODO: Validate
+        this.numberOfItems = numberOfItems;
+    }
+
+    private void setAmount(int amount) {
+        // TODO: Validate
+        this.amount = amount;
+    }
+
+    private void setRate(double rate) {
+        // TODO: Validate
+        this.rate = rate;
+    }
+
+    private void setDiscountType(DiscountType discountType) {
+        // TODO: Validate
+        this.discountType = discountType;
     }
 }

@@ -2,15 +2,12 @@ package com.github.makiftutuncu.shoppingcart;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 public class Category {
-    private UUID id;
     private String title;
     private Category parent;
 
     public Category(String title, Category parent) {
-        this.id = UUID.randomUUID();
         setTitle(title);
         setParent(parent);
     }
@@ -19,29 +16,16 @@ public class Category {
         this(title, null);
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public void setTitle(String title) {
-        // TODO: Validate
-        this.title = title;
-    }
-
-    public Optional<Category> getParent() {
+    public Optional<Category> parent() {
         return Optional.ofNullable(parent);
     }
 
-    public void setParent(Category parent) {
-        this.parent = parent;
-    }
-
     public boolean isChild(Category parent) {
-        return getParent().map(p -> p.equals(parent)).orElse(false);
+        return parent().map(p -> p.equals(parent)).orElse(false);
     }
 
     @Override public boolean equals(Object o) {
@@ -50,14 +34,23 @@ public class Category {
 
         Category c = (Category) o;
 
-        return id.equals(c.id) && title.equals(c.title) && getParent().equals(c.getParent());
+        return title.equals(c.title) && parent().equals(c.parent());
     }
 
     @Override public int hashCode() {
-        return Objects.hash(id, title, parent);
+        return Objects.hash(title, parent);
     }
 
     @Override public String toString() {
-        return getParent().map(parent -> parent.toString() + " / ").orElse("") + title;
+        return parent().map(parent -> parent.toString() + " / ").orElse("") + title;
+    }
+
+    private void setTitle(String title) {
+        // TODO: Validate
+        this.title = title;
+    }
+
+    private void setParent(Category parent) {
+        this.parent = parent;
     }
 }

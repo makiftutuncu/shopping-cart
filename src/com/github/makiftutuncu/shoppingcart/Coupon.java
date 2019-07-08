@@ -21,40 +21,8 @@ public class Coupon {
         return new Coupon(minimumAmount, 0, rate, DiscountType.Rate);
     }
 
-    public int getMinimumAmount() {
+    public int minimumAmount() {
         return minimumAmount;
-    }
-
-    public void setMinimumAmount(int minimumAmount) {
-        // TODO: Validate
-        this.minimumAmount = minimumAmount;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int amount) {
-        // TODO: Validate
-        this.amount = amount;
-    }
-
-    public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        // TODO: Validate
-        this.rate = rate;
-    }
-
-    public DiscountType getDiscountType() {
-        return discountType;
-    }
-
-    public void setDiscountType(DiscountType discountType) {
-        // TODO: Validate
-        this.discountType = discountType;
     }
 
     public int discountFor(int cartAmount) {
@@ -71,5 +39,25 @@ public class Coupon {
             case Amount: return String.format("%s off on the cart for %s or more", MoneyPrinter.print(amount), MoneyPrinter.print(minimumAmount));
             default:     return "Coupon";
         }
+    }
+
+    private void setMinimumAmount(int minimumAmount) {
+        // TODO: Validate
+        this.minimumAmount = minimumAmount;
+    }
+
+    private void setAmount(int amount) {
+        // TODO: Validate
+        this.amount = amount;
+    }
+
+    private void setRate(double rate) {
+        // TODO: Validate
+        this.rate = rate;
+    }
+
+    private void setDiscountType(DiscountType discountType) {
+        // TODO: Validate
+        this.discountType = discountType;
     }
 }

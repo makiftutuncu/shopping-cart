@@ -9,34 +9,34 @@ public class CartItem {
         setQuantity(quantity);
     }
 
-    public Product getProduct() {
+    public Product product() {
         return product;
     }
 
-    public void setProduct(Product product) {
-        // TODO: Validate
-        this.product = product;
-    }
-
-    public int getQuantity() {
+    public int quantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
-        // TODO: Validate
-        this.quantity = quantity;
-    }
-
-    public CartItem withAddedQuantity(int quantity) {
+    public CartItem addingQuantity(int quantity) {
         setQuantity(this.quantity + quantity);
         return this;
     }
 
     public int totalAmount() {
-        return quantity * product.getPrice();
+        return quantity * product.price();
+    }
+
+    private void setProduct(Product product) {
+        // TODO: Validate
+        this.product = product;
+    }
+
+    private void setQuantity(int quantity) {
+        // TODO: Validate
+        this.quantity = quantity;
     }
 
     @Override public String toString() {
-        return String.format("%s x %d = %s", product.getTitle(), quantity, MoneyPrinter.print(totalAmount()));
+        return String.format("%s x %d = %s", product.title(), quantity, MoneyPrinter.print(totalAmount()));
     }
 }

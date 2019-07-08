@@ -15,38 +15,38 @@ public class Product {
         setCategory(category);
     }
 
-    public UUID getId() {
+    public UUID id() {
         return id;
     }
 
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public int price() {
+        return price;
+    }
+
+    public Category category() {
+        return category;
+    }
+
+    @Override public String toString() {
+        return String.format("%s (%s)", title, MoneyPrinter.print(price));
+    }
+
+    private void setTitle(String title) {
         // TODO: Validate
         this.title = title;
     }
 
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
+    private void setPrice(int price) {
         // TODO: Validate
         this.price = price;
-    }
-
-    public Category getCategory() {
-        return category;
     }
 
     public void setCategory(Category category) {
         // TODO: Validate
         this.category = category;
-    }
-
-    @Override public String toString() {
-        return String.format("%s (%s)", title, MoneyPrinter.print(price));
     }
 }

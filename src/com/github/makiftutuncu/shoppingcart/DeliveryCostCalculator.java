@@ -1,35 +1,32 @@
 package com.github.makiftutuncu.shoppingcart;
 
 public class DeliveryCostCalculator {
-    private int costPerDelivery;
+    private int costPerCategory;
     private int costPerProduct;
+    private int fixedCost;
 
-    private static final int FIXED_COST = 299;
-
-    public DeliveryCostCalculator(int costPerDelivery, int costPerProduct) {
-        setCostPerDelivery(costPerDelivery);
+    public DeliveryCostCalculator(int costPerCategory, int costPerProduct, int fixedCost) {
+        setCostPerCategory(costPerCategory);
         setCostPerProduct(costPerProduct);
+        setFixedCost(fixedCost);
     }
 
-    public int getCostPerDelivery() {
-        return costPerDelivery;
+    public int calculateFor(int numberOfCategories, int numberOfItems) {
+        return (numberOfCategories * costPerCategory) + (numberOfItems * costPerProduct) + fixedCost;
     }
 
-    public void setCostPerDelivery(int costPerDelivery) {
+    private void setCostPerCategory(int costPerCategory) {
         // TODO: Validate
-        this.costPerDelivery = costPerDelivery;
+        this.costPerCategory = costPerCategory;
     }
 
-    public int getCostPerProduct() {
-        return costPerProduct;
-    }
-
-    public void setCostPerProduct(int costPerProduct) {
+    private void setCostPerProduct(int costPerProduct) {
         // TODO: Validate
         this.costPerProduct = costPerProduct;
     }
 
-    public int calculateFor(ShoppingCart cart) {
-        return (cart.numberOfDeliveries() * costPerDelivery) + (cart.numberOfProducts() * costPerProduct) + FIXED_COST;
+    private void setFixedCost(int fixedCost) {
+        // TODO: Validate
+        this.fixedCost = fixedCost;
     }
 }
