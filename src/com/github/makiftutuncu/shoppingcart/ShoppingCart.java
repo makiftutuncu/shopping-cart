@@ -9,7 +9,13 @@ public class ShoppingCart {
     private List<Campaign> campaigns                   = new ArrayList<>();
     private List<Coupon> coupons                       = new ArrayList<>();
 
+    private DeliveryCostCalculator deliveryCostCalculator;
+
     private int totalAmount;
+
+    public ShoppingCart(DeliveryCostCalculator deliveryCostCalculator) {
+        this.deliveryCostCalculator = deliveryCostCalculator;
+    }
 
     public ShoppingCart addProduct(Product product, int quantity) {
         UUID productId = product.getId();
@@ -48,67 +54,80 @@ public class ShoppingCart {
         return this;
     }
 
-    public int numberOfItems() {
-        return items.size();
-    }
-
     public int numberOfProducts() {
-        return items.values().stream().map(CartItem::getQuantity).reduce(0, Integer::sum);
+        return items.size();
     }
 
     public int numberOfDeliveries() {
         return categories.size();
     }
 
-    public void print() {
-        int totalCampaignDiscounts = 0;
+    public int getCampaignDiscount() {
+        int campaignDiscount = 0;
 
         for (Category category : categories.values()) {
-            System.out.println("================================");
-            System.out.println(category.getTitle());
-            System.out.println("================================");
+            for (CartItem item : itemsInCategories.get(category.getId())) {
+                Product product = item.getProduct();
+
+                campaignDiscount += findBestCampaign(item).map(c -> c.discountFor(product)).orElse(0);
+            }
+        }
+
+        return campaignDiscount;
+    }
+
+    public int getCouponDiscount(int cartAmount) {
+        return findBestCoupon(cartAmount).map(c -> c.discountFor(cartAmount)).orElse(0);
+    }
+
+    public int getDeliveryCost() {
+        return deliveryCostCalculator.calculateFor(this);
+    }
+
+    public void print() {
+        for (Category category : categories.values()) {
+            printSection(() -> System.out.println(category.getTitle()));
 
             for (CartItem item : itemsInCategories.get(category.getId())) {
                 Product product = item.getProduct();
 
                 int campaignDiscount = findBestCampaign(item).map(c -> c.discountFor(product)).orElse(0);
 
-                totalCampaignDiscounts += campaignDiscount;
-
                 System.out.printf("%s x %d\n",  product.getTitle(), item.getQuantity());
 
                 if (item.getQuantity() > 1) {
-                    System.out.printf("Total Price: %s\n",  MoneyPrinter.print(item.totalAmount()));
+                    System.out.printf("Total Amount:  %s\n",  MoneyPrinter.print(item.totalAmount()));
                 }
 
                 if (campaignDiscount > 0) {
-                    System.out.printf("Unit Price : %s\n",  MoneyPrinter.print(product.getPrice()));
-                    System.out.printf("Discount   : -%s\n", MoneyPrinter.print(campaignDiscount));
+                    System.out.printf("Unit Amount :  %s\n",  MoneyPrinter.print(product.getPrice()));
+                    System.out.printf("Discount    : -%s\n", MoneyPrinter.print(campaignDiscount));
                 }
 
-                System.out.printf("Final Price: %s\n",  MoneyPrinter.print(item.totalAmount() - campaignDiscount));
-
-
+                System.out.printf("Final Amount:  %s\n",  MoneyPrinter.print(item.totalAmount() - campaignDiscount));
                 System.out.println();
             }
         }
 
-        int cartAmount = totalAmount - totalCampaignDiscounts;
+        int campaignDiscount = getCampaignDiscount();
+        int cartAmount       = totalAmount - campaignDiscount;
+        int couponDiscount   = getCouponDiscount(cartAmount);
+        int deliveryCost     = getDeliveryCost();
+        int finalAmount      = cartAmount - couponDiscount + deliveryCost;
 
-        int couponDiscount = findBestCoupon(cartAmount).map(c -> c.discountFor(cartAmount)).orElse(0);
+        printSection(() -> {
+            if (couponDiscount > 0) {
+                System.out.println("Cart Amount    :  " + MoneyPrinter.print(cartAmount));
+                System.out.println("Coupon Discount: -" + MoneyPrinter.print(couponDiscount));
+            }
 
-        int finalAmount = cartAmount - couponDiscount;
+            System.out.println("Delivery Cost  :  " + MoneyPrinter.print(deliveryCost));
+            System.out.println("Final Amount   :  " + MoneyPrinter.print(finalAmount));
+        });
+    }
 
-
-        System.out.println("================================");
-        if (couponDiscount > 0) {
-            System.out.println("Cart Price     : " + MoneyPrinter.print(cartAmount));
-            System.out.println("Coupon Discount: -" + MoneyPrinter.print(couponDiscount));
-        }
-
-        System.out.println("Final Price    : " + MoneyPrinter.print(finalAmount));
-        System.out.println("================================");
-
+    @Override public String toString() {
+        return String.format("Shopping cart with %d products(s)", numberOfProducts());
     }
 
     private Optional<Campaign> findBestCampaign(CartItem cartItem) {
@@ -135,7 +154,9 @@ public class ShoppingCart {
                 .max(Comparator.comparingInt(c -> c.discountFor(cartAmount)));
     }
 
-    @Override public String toString() {
-        return String.format("Shopping cart with %d products(s)", numberOfProducts());
+    private void printSection(Runnable action) {
+        System.out.println("================================");
+        action.run();
+        System.out.println("================================");
     }
 }

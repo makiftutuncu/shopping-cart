@@ -24,7 +24,7 @@ Implement a class that takes a cart and calculates the delivery cost.
 
 ```java
 //sample creating a new category
-Category food = new new Category(“food");
+Category food = new Category(“food");
 
 //products
 Product apple = new Product(“Apple”, 100.0, category);

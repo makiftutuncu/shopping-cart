@@ -2,7 +2,8 @@ package com.github.makiftutuncu.shoppingcart;
 
 public class Main {
     public static void main(String[] args) {
-        ShoppingCart cart = new ShoppingCart();
+        DeliveryCostCalculator calculator = new DeliveryCostCalculator(100, 50);
+        ShoppingCart cart = new ShoppingCart(calculator);
 
         Category food  = new Category("Food");
         Category fruit = new Category("Fruit", food);
@@ -11,6 +12,7 @@ public class Main {
         Product orange = new Product("Orange", 200, fruit);
         Product milk   = new Product("Milk", 500, food);
         Product bread  = new Product("Bread", 100, food);
+        Product water  = new Product("Water", 50, food);
 
         Campaign oneLiraOffForTwoFoods    = Campaign.ofAmount(food, 2, 100);
         Campaign tenPercentOffThreeFruits = Campaign.ofRate(fruit, 3, 0.1);
@@ -19,9 +21,10 @@ public class Main {
         Coupon twoPercentOffCartForTwentyLiras   = Coupon.ofRate(2000, 0.02);
 
         cart.addProduct(bread, 3)
-            .addProduct(milk, 1)
+            .addProduct(milk, 2)
             .addProduct(apple, 4)
             .addProduct(orange, 5)
+            .addProduct(water, 1)
             .applyCampaigns(oneLiraOffForTwoFoods, tenPercentOffThreeFruits)
             .applyCoupons(fiveLirasOffCartForTwentyFiveLiras, twoPercentOffCartForTwentyLiras);
 
