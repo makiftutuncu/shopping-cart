@@ -74,29 +74,48 @@
 
 <div class="sourceCode"><i>1</i>&nbsp;package com.github.makiftutuncu.shoppingcart;
 <i>2</i>&nbsp;
-<b class="nc"><i>3</i>&nbsp;public class MoneyPrinter {</b>
-<i>4</i>&nbsp;    private final static String CURRENCY = &quot;₺&quot;;
-<i>5</i>&nbsp;    private final static boolean PREFIX  = true;
-<i>6</i>&nbsp;
-<i>7</i>&nbsp;    public static String print(int amount) {
-<b class="fc"><i>8</i>&nbsp;        return print(amount, CURRENCY, PREFIX);</b>
-<i>9</i>&nbsp;    }
-<i>10</i>&nbsp;
-<i>11</i>&nbsp;    public static String print(int amount, String currency, boolean currencyAsPrefix) {
-<b class="fc"><i>12</i>&nbsp;        String sign           = amount &lt; 0 ? &quot;-&quot; : &quot;&quot;;</b>
-<b class="fc"><i>13</i>&nbsp;        String currencyPrefix = currencyAsPrefix ? currency : &quot;&quot;;</b>
-<b class="fc"><i>14</i>&nbsp;        String money          = String.format(&quot;%.2f&quot;, Math.abs(((double) amount) / 100));</b>
-<b class="fc"><i>15</i>&nbsp;        String currencySuffix = currencyAsPrefix ? &quot;&quot; : currency;</b>
-<i>16</i>&nbsp;
-<b class="fc"><i>17</i>&nbsp;        return sign + currencyPrefix + money + currencySuffix;</b>
-<i>18</i>&nbsp;    }
-<i>19</i>&nbsp;}
+<i>3</i>&nbsp;/**
+<i>4</i>&nbsp; * A utility class to format money values properly
+<i>5</i>&nbsp; */
+<b class="nc"><i>6</i>&nbsp;public class MoneyPrinter {</b>
+<i>7</i>&nbsp;    private final static String DEFAULT_CURRENCY = &quot;₺&quot;;
+<i>8</i>&nbsp;    private final static boolean DEFAULT_PREFIX  = true;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;    /**
+<i>11</i>&nbsp;     * Prints given money amount using default currency and currency position
+<i>12</i>&nbsp;     *
+<i>13</i>&nbsp;     * @param amount Amount of money to print
+<i>14</i>&nbsp;     *
+<i>15</i>&nbsp;     * @return Printed money
+<i>16</i>&nbsp;     */
+<i>17</i>&nbsp;    public static String print(int amount) {
+<b class="fc"><i>18</i>&nbsp;        return print(amount, DEFAULT_CURRENCY, DEFAULT_PREFIX);</b>
+<i>19</i>&nbsp;    }
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    /**
+<i>22</i>&nbsp;     * Prints given money amount using given currency and currency position
+<i>23</i>&nbsp;     *
+<i>24</i>&nbsp;     * @param amount           Amount of money to print
+<i>25</i>&nbsp;     * @param currency         Currency symbol of the money
+<i>26</i>&nbsp;     * @param currencyAsPrefix Whether or not to print the currency before the amount
+<i>27</i>&nbsp;     *
+<i>28</i>&nbsp;     * @return Printed money
+<i>29</i>&nbsp;     */
+<i>30</i>&nbsp;    public static String print(int amount, String currency, boolean currencyAsPrefix) {
+<b class="fc"><i>31</i>&nbsp;        String sign           = amount &lt; 0 ? &quot;-&quot; : &quot;&quot;;</b>
+<b class="fc"><i>32</i>&nbsp;        String currencyPrefix = currencyAsPrefix ? currency : &quot;&quot;;</b>
+<b class="fc"><i>33</i>&nbsp;        String money          = String.format(&quot;%.2f&quot;, Math.abs(((double) amount) / 100));</b>
+<b class="fc"><i>34</i>&nbsp;        String currencySuffix = currencyAsPrefix ? &quot;&quot; : currency;</b>
+<i>35</i>&nbsp;
+<b class="fc"><i>36</i>&nbsp;        return sign + currencyPrefix + money + currencySuffix;</b>
+<i>37</i>&nbsp;    }
+<i>38</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 17:18</div>
+    <div style="float:right;">generated on 2019-07-09 22:09</div>
 </div>
 </body>
 </html>

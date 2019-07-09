@@ -144,7 +144,7 @@ public class ShoppingCart {
     public int totalAmountAfterDiscounts() {
         int[] amounts = calculateAmounts();
 
-        return amounts[0] - amounts[1] - amounts[2];
+        return Math.max(amounts[0] - amounts[1] - amounts[2], 0);
     }
 
     /**
@@ -243,7 +243,7 @@ public class ShoppingCart {
             totalCampaignDiscount += campaignDiscount;
         }
 
-        int cartAmount   = totalAmount - totalCampaignDiscount;
+        int cartAmount   = Math.max(totalAmount - totalCampaignDiscount, 0);
         int deliveryCost = deliveryCost();
 
         System.out.println("================================");
@@ -262,7 +262,7 @@ public class ShoppingCart {
             return discount;
         }).orElse(0);
 
-        int finalAmount = cartAmount - couponDiscount + deliveryCost;
+        int finalAmount = Math.max(cartAmount - couponDiscount, 0) + deliveryCost;
 
         System.out.println();
         System.out.println("Final Amount: " + MoneyPrinter.print(finalAmount));

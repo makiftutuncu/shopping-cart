@@ -47,10 +47,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    92.9%
+    93.9%
   </span>
   <span class="absValue">
-    (26/ 28)
+    (31/ 33)
   </span>
 </td>
 </tr>
@@ -85,10 +85,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    93.1%
+    94.1%
   </span>
   <span class="absValue">
-    (27/ 29)
+    (32/ 34)
   </span>
 </td>
 </tr>
@@ -100,78 +100,109 @@
 
 <div class="sourceCode"><i>1</i>&nbsp;package com.github.makiftutuncu.shoppingcart;
 <i>2</i>&nbsp;
-<i>3</i>&nbsp;public class Coupon {
-<i>4</i>&nbsp;    private int minimumAmount;
-<i>5</i>&nbsp;    private int amount;
-<i>6</i>&nbsp;    private double rate;
-<i>7</i>&nbsp;    private DiscountType discountType;
-<i>8</i>&nbsp;
-<b class="fc"><i>9</i>&nbsp;    private Coupon(int minimumAmount, DiscountType discountType) {</b>
-<b class="fc"><i>10</i>&nbsp;        setMinimumAmount(minimumAmount);</b>
-<b class="fc"><i>11</i>&nbsp;        setDiscountType(discountType);</b>
-<i>12</i>&nbsp;    }
+<i>3</i>&nbsp;/**
+<i>4</i>&nbsp; * Coupon is a way to make discounts on the {@link com.github.makiftutuncu.shoppingcart.ShoppingCart} itself.
+<i>5</i>&nbsp; * It is valid for a specific minimum cart amount.
+<i>6</i>&nbsp; * Coupon discounts are either fixed amounts or rates, see {@link com.github.makiftutuncu.shoppingcart.DiscountType}
+<i>7</i>&nbsp; */
+<i>8</i>&nbsp;public class Coupon {
+<i>9</i>&nbsp;    private int minimumAmount;
+<i>10</i>&nbsp;    private int amount;
+<i>11</i>&nbsp;    private double rate;
+<i>12</i>&nbsp;    private DiscountType discountType;
 <i>13</i>&nbsp;
-<i>14</i>&nbsp;    public static Coupon ofAmount(int minimumAmount, int amount) {
-<b class="fc"><i>15</i>&nbsp;        Coupon coupon = new Coupon(minimumAmount, DiscountType.Amount);</b>
-<b class="fc"><i>16</i>&nbsp;        coupon.setAmount(amount);</b>
-<b class="fc"><i>17</i>&nbsp;        return coupon;</b>
-<i>18</i>&nbsp;    }
-<i>19</i>&nbsp;
-<i>20</i>&nbsp;    public static Coupon ofRate(int minimumAmount, double rate) {
-<b class="fc"><i>21</i>&nbsp;        Coupon coupon = new Coupon(minimumAmount, DiscountType.Rate);</b>
-<b class="fc"><i>22</i>&nbsp;        coupon.setRate(rate);</b>
-<b class="fc"><i>23</i>&nbsp;        return coupon;</b>
-<i>24</i>&nbsp;    }
-<i>25</i>&nbsp;
-<i>26</i>&nbsp;    public int minimumAmount() {
-<b class="fc"><i>27</i>&nbsp;        return minimumAmount;</b>
-<i>28</i>&nbsp;    }
-<i>29</i>&nbsp;
-<i>30</i>&nbsp;    public int discountFor(int cartAmount) {
-<b class="fc"><i>31</i>&nbsp;        if (cartAmount &lt; minimumAmount) return 0;</b>
+<b class="fc"><i>14</i>&nbsp;    private Coupon(int minimumAmount, DiscountType discountType) {</b>
+<b class="fc"><i>15</i>&nbsp;        setMinimumAmount(minimumAmount);</b>
+<b class="fc"><i>16</i>&nbsp;        setDiscountType(discountType);</b>
+<b class="fc"><i>17</i>&nbsp;    }</b>
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;    /**
+<i>20</i>&nbsp;     * Creates an amount-based coupon
+<i>21</i>&nbsp;     *
+<i>22</i>&nbsp;     * @param minimumAmount Minimum cart amount for the coupon, must be positive
+<i>23</i>&nbsp;     * @param amount        Amount of discount of the coupon, must be positive
+<i>24</i>&nbsp;     *
+<i>25</i>&nbsp;     * @return Created coupon
+<i>26</i>&nbsp;     */
+<i>27</i>&nbsp;    public static Coupon ofAmount(int minimumAmount, int amount) {
+<b class="fc"><i>28</i>&nbsp;        Coupon coupon = new Coupon(minimumAmount, DiscountType.Amount);</b>
+<b class="fc"><i>29</i>&nbsp;        coupon.setAmount(amount);</b>
+<b class="fc"><i>30</i>&nbsp;        return coupon;</b>
+<i>31</i>&nbsp;    }
 <i>32</i>&nbsp;
-<b class="pc"><i>33</i>&nbsp;        switch (discountType) {</b>
-<b class="fc"><i>34</i>&nbsp;            case Rate:   return ((int) (cartAmount * rate));</b>
-<b class="fc"><i>35</i>&nbsp;            case Amount: return amount;</b>
-<b class="nc"><i>36</i>&nbsp;            default:     return 0;</b>
-<i>37</i>&nbsp;        }
-<i>38</i>&nbsp;    }
-<i>39</i>&nbsp;
-<i>40</i>&nbsp;    @Override public String toString() {
-<b class="pc"><i>41</i>&nbsp;        switch (discountType) {</b>
-<b class="fc"><i>42</i>&nbsp;            case Rate:   return String.format(&quot;%.0f%% off on the cart for %s or more&quot;, rate * 100, MoneyPrinter.print(minimumAmount));</b>
-<b class="fc"><i>43</i>&nbsp;            case Amount: return String.format(&quot;%s off on the cart for %s or more&quot;, MoneyPrinter.print(amount), MoneyPrinter.print(minimumAmount));</b>
-<b class="nc"><i>44</i>&nbsp;            default:     return &quot;Coupon&quot;;</b>
-<i>45</i>&nbsp;        }
-<i>46</i>&nbsp;    }
-<i>47</i>&nbsp;
-<i>48</i>&nbsp;    private void setMinimumAmount(int minimumAmount) {
-<b class="fc"><i>49</i>&nbsp;        if (minimumAmount &lt; 1) throw new IllegalArgumentException(&quot;Coupon minimum amount must be positive!&quot;);</b>
-<b class="fc"><i>50</i>&nbsp;        this.minimumAmount = minimumAmount;</b>
-<i>51</i>&nbsp;    }
-<i>52</i>&nbsp;
-<i>53</i>&nbsp;    private void setAmount(int amount) {
-<b class="fc"><i>54</i>&nbsp;        if (amount &lt; 1) throw new IllegalArgumentException(&quot;Coupon amount must be positive!&quot;);</b>
-<b class="fc"><i>55</i>&nbsp;        this.amount = amount;</b>
-<b class="fc"><i>56</i>&nbsp;        this.rate = 0;</b>
-<i>57</i>&nbsp;    }
-<i>58</i>&nbsp;
-<i>59</i>&nbsp;    private void setRate(double rate) {
-<b class="fc"><i>60</i>&nbsp;        if (rate &lt;= 0 || rate &gt; 1) throw new IllegalArgumentException(&quot;Coupon rate must be a valid positive percentage!&quot;);</b>
-<b class="fc"><i>61</i>&nbsp;        this.amount = 0;</b>
-<b class="fc"><i>62</i>&nbsp;        this.rate = rate;</b>
-<i>63</i>&nbsp;    }
-<i>64</i>&nbsp;
-<i>65</i>&nbsp;    private void setDiscountType(DiscountType discountType) {
-<b class="fc"><i>66</i>&nbsp;        this.discountType = discountType;</b>
-<i>67</i>&nbsp;    }
-<i>68</i>&nbsp;}
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * Creates a rate-based coupon
+<i>35</i>&nbsp;     *
+<i>36</i>&nbsp;     * @param minimumAmount Minimum cart amount for the coupon, must be positive
+<i>37</i>&nbsp;     * @param rate          Rate of discount of the coupon, must be in (0, 1)
+<i>38</i>&nbsp;     *
+<i>39</i>&nbsp;     * @return Created coupon
+<i>40</i>&nbsp;     */
+<i>41</i>&nbsp;    public static Coupon ofRate(int minimumAmount, double rate) {
+<b class="fc"><i>42</i>&nbsp;        Coupon coupon = new Coupon(minimumAmount, DiscountType.Rate);</b>
+<b class="fc"><i>43</i>&nbsp;        coupon.setRate(rate);</b>
+<b class="fc"><i>44</i>&nbsp;        return coupon;</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * @return Minimum amount of the coupon
+<i>49</i>&nbsp;     */
+<i>50</i>&nbsp;    public int minimumAmount() {
+<b class="fc"><i>51</i>&nbsp;        return minimumAmount;</b>
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;    /**
+<i>55</i>&nbsp;     * Calculates the discount amount to be applied
+<i>56</i>&nbsp;     *
+<i>57</i>&nbsp;     * @param cartAmount Amount of the cart
+<i>58</i>&nbsp;     *
+<i>59</i>&nbsp;     * @return Calculated amount or 0 if there won&#39;t be a discount
+<i>60</i>&nbsp;     */
+<i>61</i>&nbsp;    public int discountFor(int cartAmount) {
+<b class="fc"><i>62</i>&nbsp;        if (cartAmount &lt; minimumAmount) return 0;</b>
+<i>63</i>&nbsp;
+<b class="fc"><i>64</i>&nbsp;        switch (discountType) {</b>
+<b class="fc"><i>65</i>&nbsp;            case Rate:   return ((int) (cartAmount * rate));</b>
+<b class="fc"><i>66</i>&nbsp;            case Amount: return amount;</b>
+<b class="nc"><i>67</i>&nbsp;            default:     return 0;</b>
+<i>68</i>&nbsp;        }
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    @Override public String toString() {
+<b class="fc"><i>72</i>&nbsp;        switch (discountType) {</b>
+<b class="fc"><i>73</i>&nbsp;            case Rate:   return String.format(&quot;%.0f%% off on the cart for %s or more&quot;, rate * 100, MoneyPrinter.print(minimumAmount));</b>
+<b class="fc"><i>74</i>&nbsp;            case Amount: return String.format(&quot;%s off on the cart for %s or more&quot;, MoneyPrinter.print(amount), MoneyPrinter.print(minimumAmount));</b>
+<b class="nc"><i>75</i>&nbsp;            default:     return &quot;Coupon&quot;;</b>
+<i>76</i>&nbsp;        }
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;    private void setMinimumAmount(int minimumAmount) {
+<b class="fc"><i>80</i>&nbsp;        if (minimumAmount &lt; 1) throw new IllegalArgumentException(&quot;Coupon minimum amount must be positive!&quot;);</b>
+<b class="fc"><i>81</i>&nbsp;        this.minimumAmount = minimumAmount;</b>
+<b class="fc"><i>82</i>&nbsp;    }</b>
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    private void setAmount(int amount) {
+<b class="fc"><i>85</i>&nbsp;        if (amount &lt; 1) throw new IllegalArgumentException(&quot;Coupon amount must be positive!&quot;);</b>
+<b class="fc"><i>86</i>&nbsp;        this.amount = amount;</b>
+<b class="fc"><i>87</i>&nbsp;        this.rate = 0;</b>
+<b class="fc"><i>88</i>&nbsp;    }</b>
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    private void setRate(double rate) {
+<b class="fc"><i>91</i>&nbsp;        if (rate &lt;= 0 || rate &gt; 1) throw new IllegalArgumentException(&quot;Coupon rate must be a valid positive percentage!&quot;);</b>
+<b class="fc"><i>92</i>&nbsp;        this.amount = 0;</b>
+<b class="fc"><i>93</i>&nbsp;        this.rate = rate;</b>
+<b class="fc"><i>94</i>&nbsp;    }</b>
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    private void setDiscountType(DiscountType discountType) {
+<b class="fc"><i>97</i>&nbsp;        this.discountType = discountType;</b>
+<b class="fc"><i>98</i>&nbsp;    }</b>
+<i>99</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 17:18</div>
+    <div style="float:right;">generated on 2019-07-09 22:09</div>
 </div>
 </body>
 </html>

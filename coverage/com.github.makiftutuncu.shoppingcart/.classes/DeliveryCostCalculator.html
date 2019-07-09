@@ -61,7 +61,7 @@
     100%
   </span>
   <span class="absValue">
-    (13/ 13)
+    (17/ 17)
   </span>
 </td>
 </tr>
@@ -74,44 +74,63 @@
 
 <div class="sourceCode"><i>1</i>&nbsp;package com.github.makiftutuncu.shoppingcart;
 <i>2</i>&nbsp;
-<i>3</i>&nbsp;public class DeliveryCostCalculator {
-<i>4</i>&nbsp;    private int costPerCategory;
-<i>5</i>&nbsp;    private int costPerProduct;
-<i>6</i>&nbsp;    private int fixedCost;
-<i>7</i>&nbsp;
-<b class="fc"><i>8</i>&nbsp;    public DeliveryCostCalculator(int costPerCategory, int costPerProduct, int fixedCost) {</b>
-<b class="fc"><i>9</i>&nbsp;        setCostPerCategory(costPerCategory);</b>
-<b class="fc"><i>10</i>&nbsp;        setCostPerProduct(costPerProduct);</b>
-<b class="fc"><i>11</i>&nbsp;        setFixedCost(fixedCost);</b>
-<i>12</i>&nbsp;    }
-<i>13</i>&nbsp;
-<i>14</i>&nbsp;    public int calculateFor(int numberOfCategories, int numberOfItems) {
-<b class="fc"><i>15</i>&nbsp;        if (numberOfCategories &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator number of categories must be positive!&quot;);</b>
-<b class="fc"><i>16</i>&nbsp;        if (numberOfItems &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator number of items must be positive!&quot;);</b>
-<b class="fc"><i>17</i>&nbsp;        return (numberOfCategories * costPerCategory) + (numberOfItems * costPerProduct) + fixedCost;</b>
-<i>18</i>&nbsp;    }
-<i>19</i>&nbsp;
-<i>20</i>&nbsp;    private void setCostPerCategory(int costPerCategory) {
-<b class="fc"><i>21</i>&nbsp;        if (costPerCategory &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator cost per category must be positive!&quot;);</b>
-<b class="fc"><i>22</i>&nbsp;        this.costPerCategory = costPerCategory;</b>
-<i>23</i>&nbsp;    }
+<i>3</i>&nbsp;/**
+<i>4</i>&nbsp; * Delivery cost calculator is responsible for calculating a dynamic delivery cost.
+<i>5</i>&nbsp; * It depends on number of different categories and number of different products in the cart.
+<i>6</i>&nbsp; */
+<i>7</i>&nbsp;public class DeliveryCostCalculator {
+<i>8</i>&nbsp;    private int costPerCategory;
+<i>9</i>&nbsp;    private int costPerProduct;
+<i>10</i>&nbsp;    private int fixedCost;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;    /**
+<i>13</i>&nbsp;     * Creates a delivery cost calculator
+<i>14</i>&nbsp;     *
+<i>15</i>&nbsp;     * @param costPerCategory Unit cost per category, must be positive
+<i>16</i>&nbsp;     * @param costPerProduct  Unit cost per product, must be positive
+<i>17</i>&nbsp;     * @param fixedCost       A fixed cost as a base value, must be positive
+<i>18</i>&nbsp;     */
+<b class="fc"><i>19</i>&nbsp;    public DeliveryCostCalculator(int costPerCategory, int costPerProduct, int fixedCost) {</b>
+<b class="fc"><i>20</i>&nbsp;        setCostPerCategory(costPerCategory);</b>
+<b class="fc"><i>21</i>&nbsp;        setCostPerProduct(costPerProduct);</b>
+<b class="fc"><i>22</i>&nbsp;        setFixedCost(fixedCost);</b>
+<b class="fc"><i>23</i>&nbsp;    }</b>
 <i>24</i>&nbsp;
-<i>25</i>&nbsp;    private void setCostPerProduct(int costPerProduct) {
-<b class="fc"><i>26</i>&nbsp;        if (costPerProduct &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator cost per product must be positive!&quot;);</b>
-<b class="fc"><i>27</i>&nbsp;        this.costPerProduct = costPerProduct;</b>
-<i>28</i>&nbsp;    }
-<i>29</i>&nbsp;
-<i>30</i>&nbsp;    private void setFixedCost(int fixedCost) {
-<b class="fc"><i>31</i>&nbsp;        if (fixedCost &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator fixed cost must be positive!&quot;);</b>
-<b class="fc"><i>32</i>&nbsp;        this.fixedCost = fixedCost;</b>
-<i>33</i>&nbsp;    }
-<i>34</i>&nbsp;}
+<i>25</i>&nbsp;    /**
+<i>26</i>&nbsp;     * Calculates delivery cost for given values
+<i>27</i>&nbsp;     *
+<i>28</i>&nbsp;     * @param numberOfCategories Number of different categories in the cart, must be positive
+<i>29</i>&nbsp;     * @param numberOfProducts   Number of different products in the cart, must be positive
+<i>30</i>&nbsp;     *
+<i>31</i>&nbsp;     * @return Calculated delivery cost
+<i>32</i>&nbsp;     */
+<i>33</i>&nbsp;    public int calculateFor(int numberOfCategories, int numberOfProducts) {
+<b class="fc"><i>34</i>&nbsp;        if (numberOfCategories &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator number of categories must be positive!&quot;);</b>
+<b class="fc"><i>35</i>&nbsp;        if (numberOfProducts &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator number of items must be positive!&quot;);</b>
+<b class="fc"><i>36</i>&nbsp;        return (numberOfCategories * costPerCategory) + (numberOfProducts * costPerProduct) + fixedCost;</b>
+<i>37</i>&nbsp;    }
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;    private void setCostPerCategory(int costPerCategory) {
+<b class="fc"><i>40</i>&nbsp;        if (costPerCategory &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator cost per category must be positive!&quot;);</b>
+<b class="fc"><i>41</i>&nbsp;        this.costPerCategory = costPerCategory;</b>
+<b class="fc"><i>42</i>&nbsp;    }</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    private void setCostPerProduct(int costPerProduct) {
+<b class="fc"><i>45</i>&nbsp;        if (costPerProduct &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator cost per product must be positive!&quot;);</b>
+<b class="fc"><i>46</i>&nbsp;        this.costPerProduct = costPerProduct;</b>
+<b class="fc"><i>47</i>&nbsp;    }</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    private void setFixedCost(int fixedCost) {
+<b class="fc"><i>50</i>&nbsp;        if (fixedCost &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator fixed cost must be positive!&quot;);</b>
+<b class="fc"><i>51</i>&nbsp;        this.fixedCost = fixedCost;</b>
+<b class="fc"><i>52</i>&nbsp;    }</b>
+<i>53</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 17:18</div>
+    <div style="float:right;">generated on 2019-07-09 22:09</div>
 </div>
 </body>
 </html>

@@ -61,7 +61,7 @@
     100%
   </span>
   <span class="absValue">
-    (18/ 18)
+    (22/ 22)
   </span>
 </td>
 </tr>
@@ -77,66 +77,93 @@
 <i>3</i>&nbsp;import java.util.Objects;
 <i>4</i>&nbsp;import java.util.Optional;
 <i>5</i>&nbsp;
-<i>6</i>&nbsp;public class Category {
-<i>7</i>&nbsp;    private String title;
-<i>8</i>&nbsp;    private Category parent;
-<i>9</i>&nbsp;
-<b class="fc"><i>10</i>&nbsp;    public Category(String title, Category parent) {</b>
-<b class="fc"><i>11</i>&nbsp;        setTitle(title);</b>
-<b class="fc"><i>12</i>&nbsp;        setParent(parent);</b>
-<i>13</i>&nbsp;    }
-<i>14</i>&nbsp;
-<i>15</i>&nbsp;    public Category(String title) {
-<b class="fc"><i>16</i>&nbsp;        this(title, null);</b>
-<i>17</i>&nbsp;    }
-<i>18</i>&nbsp;
-<i>19</i>&nbsp;    public String title() {
-<b class="fc"><i>20</i>&nbsp;        return title;</b>
-<i>21</i>&nbsp;    }
-<i>22</i>&nbsp;
-<i>23</i>&nbsp;    public Optional&lt;Category&gt; parent() {
-<b class="fc"><i>24</i>&nbsp;        return Optional.ofNullable(parent);</b>
-<i>25</i>&nbsp;    }
-<i>26</i>&nbsp;
-<i>27</i>&nbsp;    public boolean isChild(Category parent) {
-<b class="fc"><i>28</i>&nbsp;        if (this.parent == null) return false;</b>
-<b class="pc"><i>29</i>&nbsp;        if (parent == null)      return false;</b>
-<i>30</i>&nbsp;
-<b class="fc"><i>31</i>&nbsp;        return this.parent.equals(parent) || this.parent.isChild(parent);</b>
-<i>32</i>&nbsp;    }
-<i>33</i>&nbsp;
-<i>34</i>&nbsp;    @Override public boolean equals(Object o) {
-<b class="fc"><i>35</i>&nbsp;        if (this == o) return true;</b>
-<b class="pc"><i>36</i>&nbsp;        if (!(o instanceof Category)) return false;</b>
-<i>37</i>&nbsp;
-<b class="fc"><i>38</i>&nbsp;        Category c = (Category) o;</b>
+<i>6</i>&nbsp;/**
+<i>7</i>&nbsp; * Category represents a group of related {@link com.github.makiftutuncu.shoppingcart.Product}s
+<i>8</i>&nbsp; */
+<i>9</i>&nbsp;public class Category {
+<i>10</i>&nbsp;    private String title;
+<i>11</i>&nbsp;    private Category parent;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;    /**
+<i>14</i>&nbsp;     * Creates a category with a parent
+<i>15</i>&nbsp;     *
+<i>16</i>&nbsp;     * @param title  Title of the category, cannot be empty or null
+<i>17</i>&nbsp;     * @param parent Parent of the category, can be null
+<i>18</i>&nbsp;     */
+<b class="fc"><i>19</i>&nbsp;    public Category(String title, Category parent) {</b>
+<b class="fc"><i>20</i>&nbsp;        setTitle(title);</b>
+<b class="fc"><i>21</i>&nbsp;        setParent(parent);</b>
+<b class="fc"><i>22</i>&nbsp;    }</b>
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    /**
+<i>25</i>&nbsp;     * Creates a category without a parent
+<i>26</i>&nbsp;     *
+<i>27</i>&nbsp;     * @param title Title of the category, cannot be empty or null
+<i>28</i>&nbsp;     */
+<i>29</i>&nbsp;    public Category(String title) {
+<b class="fc"><i>30</i>&nbsp;        this(title, null);</b>
+<b class="fc"><i>31</i>&nbsp;    }</b>
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * @return Title of the category
+<i>35</i>&nbsp;     */
+<i>36</i>&nbsp;    public String title() {
+<b class="fc"><i>37</i>&nbsp;        return title;</b>
+<i>38</i>&nbsp;    }
 <i>39</i>&nbsp;
-<b class="pc"><i>40</i>&nbsp;        return title.equals(c.title) &amp;&amp; parent().equals(c.parent());</b>
-<i>41</i>&nbsp;    }
-<i>42</i>&nbsp;
-<i>43</i>&nbsp;    @Override public int hashCode() {
-<b class="fc"><i>44</i>&nbsp;        return Objects.hash(title, parent);</b>
+<i>40</i>&nbsp;    /**
+<i>41</i>&nbsp;     * @return Parent of the category optionally or `Optional.empty()` if category has no parent
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    public Optional&lt;Category&gt; parent() {
+<b class="fc"><i>44</i>&nbsp;        return Optional.ofNullable(parent);</b>
 <i>45</i>&nbsp;    }
 <i>46</i>&nbsp;
-<i>47</i>&nbsp;    @Override public String toString() {
-<b class="fc"><i>48</i>&nbsp;        return parent().map(parent -&gt; parent.toString() + &quot; / &quot;).orElse(&quot;&quot;) + title;</b>
-<i>49</i>&nbsp;    }
-<i>50</i>&nbsp;
-<i>51</i>&nbsp;    private void setTitle(String title) {
-<b class="fc"><i>52</i>&nbsp;        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException(&quot;Category title cannot be null or empty!&quot;);</b>
-<b class="fc"><i>53</i>&nbsp;        this.title = title;</b>
-<i>54</i>&nbsp;    }
-<i>55</i>&nbsp;
-<i>56</i>&nbsp;    private void setParent(Category parent) {
-<b class="fc"><i>57</i>&nbsp;        this.parent = parent;</b>
-<i>58</i>&nbsp;    }
-<i>59</i>&nbsp;}
+<i>47</i>&nbsp;    /**
+<i>48</i>&nbsp;     * Recursively checks if this category is a child of given category
+<i>49</i>&nbsp;     *
+<i>50</i>&nbsp;     * @param parent Category to check against
+<i>51</i>&nbsp;     *
+<i>52</i>&nbsp;     * @return true if this category is child of given category (or one of it&#39;s parent&#39;s), false otherwise
+<i>53</i>&nbsp;     */
+<i>54</i>&nbsp;    public boolean isChild(Category parent) {
+<b class="fc"><i>55</i>&nbsp;        if (this.parent == null) return false;</b>
+<b class="fc"><i>56</i>&nbsp;        if (parent == null)      return false;</b>
+<i>57</i>&nbsp;
+<b class="fc"><i>58</i>&nbsp;        return this.parent.equals(parent) || this.parent.isChild(parent);</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    @Override public boolean equals(Object o) {
+<b class="fc"><i>62</i>&nbsp;        if (this == o) return true;</b>
+<b class="fc"><i>63</i>&nbsp;        if (!(o instanceof Category)) return false;</b>
+<i>64</i>&nbsp;
+<b class="fc"><i>65</i>&nbsp;        Category c = (Category) o;</b>
+<i>66</i>&nbsp;
+<b class="fc"><i>67</i>&nbsp;        return title.equals(c.title) &amp;&amp; parent().equals(c.parent());</b>
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    @Override public int hashCode() {
+<b class="fc"><i>71</i>&nbsp;        return Objects.hash(title, parent);</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    @Override public String toString() {
+<b class="fc"><i>75</i>&nbsp;        return parent().map(parent -&gt; parent.toString() + &quot; / &quot;).orElse(&quot;&quot;) + title;</b>
+<i>76</i>&nbsp;    }
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;    private void setTitle(String title) {
+<b class="fc"><i>79</i>&nbsp;        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException(&quot;Category title cannot be null or empty!&quot;);</b>
+<b class="fc"><i>80</i>&nbsp;        this.title = title;</b>
+<b class="fc"><i>81</i>&nbsp;    }</b>
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    private void setParent(Category parent) {
+<b class="fc"><i>84</i>&nbsp;        this.parent = parent;</b>
+<b class="fc"><i>85</i>&nbsp;    }</b>
+<i>86</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 17:18</div>
+    <div style="float:right;">generated on 2019-07-09 22:09</div>
 </div>
 </body>
 </html>

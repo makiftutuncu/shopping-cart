@@ -61,7 +61,7 @@
     100%
   </span>
   <span class="absValue">
-    (16/ 16)
+    (20/ 20)
   </span>
 </td>
 </tr>
@@ -76,60 +76,82 @@
 <i>2</i>&nbsp;
 <i>3</i>&nbsp;import java.util.UUID;
 <i>4</i>&nbsp;
-<i>5</i>&nbsp;public class Product {
-<i>6</i>&nbsp;    private UUID id;
-<i>7</i>&nbsp;    private String title;
-<i>8</i>&nbsp;    private int price;
-<i>9</i>&nbsp;    private Category category;
-<i>10</i>&nbsp;
-<b class="fc"><i>11</i>&nbsp;    public Product(String title, int price, Category category) {</b>
-<b class="fc"><i>12</i>&nbsp;        this.id = UUID.randomUUID();</b>
-<b class="fc"><i>13</i>&nbsp;        setTitle(title);</b>
-<b class="fc"><i>14</i>&nbsp;        setPrice(price);</b>
-<b class="fc"><i>15</i>&nbsp;        setCategory(category);</b>
-<i>16</i>&nbsp;    }
-<i>17</i>&nbsp;
-<i>18</i>&nbsp;    public UUID id() {
-<b class="fc"><i>19</i>&nbsp;        return id;</b>
-<i>20</i>&nbsp;    }
-<i>21</i>&nbsp;
-<i>22</i>&nbsp;    public String title() {
-<b class="fc"><i>23</i>&nbsp;        return title;</b>
-<i>24</i>&nbsp;    }
-<i>25</i>&nbsp;
-<i>26</i>&nbsp;    public int price() {
-<b class="fc"><i>27</i>&nbsp;        return price;</b>
-<i>28</i>&nbsp;    }
-<i>29</i>&nbsp;
-<i>30</i>&nbsp;    public Category category() {
-<b class="fc"><i>31</i>&nbsp;        return category;</b>
-<i>32</i>&nbsp;    }
-<i>33</i>&nbsp;
-<i>34</i>&nbsp;    @Override public String toString() {
-<b class="fc"><i>35</i>&nbsp;        return String.format(&quot;%s (%s)&quot;, title, MoneyPrinter.print(price));</b>
-<i>36</i>&nbsp;    }
-<i>37</i>&nbsp;
-<i>38</i>&nbsp;    private void setTitle(String title) {
-<b class="fc"><i>39</i>&nbsp;        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException(&quot;Product title cannot be null or empty!&quot;);</b>
-<b class="fc"><i>40</i>&nbsp;        this.title = title;</b>
-<i>41</i>&nbsp;    }
-<i>42</i>&nbsp;
-<i>43</i>&nbsp;    private void setPrice(int price) {
-<b class="fc"><i>44</i>&nbsp;        if (price &lt; 1) throw new IllegalArgumentException(&quot;Product price must be positive!&quot;);</b>
-<b class="fc"><i>45</i>&nbsp;        this.price = price;</b>
-<i>46</i>&nbsp;    }
-<i>47</i>&nbsp;
-<i>48</i>&nbsp;    public void setCategory(Category category) {
-<b class="fc"><i>49</i>&nbsp;        if (category == null) throw new IllegalArgumentException(&quot;Product category cannot be null!&quot;);</b>
-<b class="fc"><i>50</i>&nbsp;        this.category = category;</b>
-<i>51</i>&nbsp;    }
-<i>52</i>&nbsp;}
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Represents a product for shopping
+<i>7</i>&nbsp; */
+<i>8</i>&nbsp;public class Product {
+<i>9</i>&nbsp;    private UUID id;
+<i>10</i>&nbsp;    private String title;
+<i>11</i>&nbsp;    private int price;
+<i>12</i>&nbsp;    private Category category;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;    /**
+<i>15</i>&nbsp;     * Creates a product
+<i>16</i>&nbsp;     *
+<i>17</i>&nbsp;     * @param title    Title of the product, cannot be null or empty
+<i>18</i>&nbsp;     * @param price    Price of the product, must be positive
+<i>19</i>&nbsp;     * @param category {@link com.github.makiftutuncu.shoppingcart.Category} of the product, cannot be null
+<i>20</i>&nbsp;     */
+<b class="fc"><i>21</i>&nbsp;    public Product(String title, int price, Category category) {</b>
+<b class="fc"><i>22</i>&nbsp;        this.id = UUID.randomUUID();</b>
+<b class="fc"><i>23</i>&nbsp;        setTitle(title);</b>
+<b class="fc"><i>24</i>&nbsp;        setPrice(price);</b>
+<b class="fc"><i>25</i>&nbsp;        setCategory(category);</b>
+<b class="fc"><i>26</i>&nbsp;    }</b>
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;    /**
+<i>29</i>&nbsp;     * @return Id of the product
+<i>30</i>&nbsp;     */
+<i>31</i>&nbsp;    public UUID id() {
+<b class="fc"><i>32</i>&nbsp;        return id;</b>
+<i>33</i>&nbsp;    }
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    /**
+<i>36</i>&nbsp;     * @return Title of the product
+<i>37</i>&nbsp;     */
+<i>38</i>&nbsp;    public String title() {
+<b class="fc"><i>39</i>&nbsp;        return title;</b>
+<i>40</i>&nbsp;    }
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    /**
+<i>43</i>&nbsp;     * @return Price of the product
+<i>44</i>&nbsp;     */
+<i>45</i>&nbsp;    public int price() {
+<b class="fc"><i>46</i>&nbsp;        return price;</b>
+<i>47</i>&nbsp;    }
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /**
+<i>50</i>&nbsp;     * @return {@link com.github.makiftutuncu.shoppingcart.Category} of the product
+<i>51</i>&nbsp;     */
+<i>52</i>&nbsp;    public Category category() {
+<b class="fc"><i>53</i>&nbsp;        return category;</b>
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    @Override public String toString() {
+<b class="fc"><i>57</i>&nbsp;        return String.format(&quot;%s (%s)&quot;, title, MoneyPrinter.print(price));</b>
+<i>58</i>&nbsp;    }
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    private void setTitle(String title) {
+<b class="fc"><i>61</i>&nbsp;        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException(&quot;Product title cannot be null or empty!&quot;);</b>
+<b class="fc"><i>62</i>&nbsp;        this.title = title;</b>
+<b class="fc"><i>63</i>&nbsp;    }</b>
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    private void setPrice(int price) {
+<b class="fc"><i>66</i>&nbsp;        if (price &lt; 1) throw new IllegalArgumentException(&quot;Product price must be positive!&quot;);</b>
+<b class="fc"><i>67</i>&nbsp;        this.price = price;</b>
+<b class="fc"><i>68</i>&nbsp;    }</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;    public void setCategory(Category category) {
+<b class="fc"><i>71</i>&nbsp;        if (category == null) throw new IllegalArgumentException(&quot;Product category cannot be null!&quot;);</b>
+<b class="fc"><i>72</i>&nbsp;        this.category = category;</b>
+<b class="fc"><i>73</i>&nbsp;    }</b>
+<i>74</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 17:18</div>
+    <div style="float:right;">generated on 2019-07-09 22:09</div>
 </div>
 </body>
 </html>

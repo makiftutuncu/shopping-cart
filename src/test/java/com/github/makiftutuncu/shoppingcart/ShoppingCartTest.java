@@ -159,6 +159,12 @@ class ShoppingCartTest {
         prepareDefaultCart();
 
         assertEquals(cart.totalAmountAfterDiscounts(), 2190);
+
+        reset();
+
+        Campaign hugeCampaign = Campaign.ofAmount(food, 1, 1000);
+        cart.addCampaigns(hugeCampaign).addProduct(bread, 1);
+        assertEquals(cart.totalAmountAfterDiscounts(), 0);
     }
 
     @Test void deliveryCost() {
