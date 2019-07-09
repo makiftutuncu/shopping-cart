@@ -3,7 +3,6 @@ package com.github.makiftutuncu.shoppingcart;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MoneyPrinterTest {
     @Test void printWithDefaults() {

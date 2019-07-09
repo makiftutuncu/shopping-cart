@@ -1,5 +1,7 @@
 package com.github.makiftutuncu.shoppingcart;
 
+import java.util.Objects;
+
 public class Campaign {
     private Category category;
     private int numberOfItems;
@@ -34,11 +36,30 @@ public class Campaign {
     }
 
     public int discountFor(int totalAmount) {
+        if (totalAmount < 1) return 0;
+
         switch (discountType) {
             case Rate:   return ((int) (totalAmount * rate));
             case Amount: return amount;
             default:     return 0;
         }
+    }
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Campaign)) return false;
+
+        Campaign c = (Campaign) o;
+
+        return numberOfItems == c.numberOfItems &&
+                amount == c.amount &&
+                Double.compare(c.rate, rate) == 0 &&
+                category.equals(c.category) &&
+                discountType == c.discountType;
+    }
+
+    @Override public int hashCode() {
+        return Objects.hash(category, numberOfItems, amount, rate, discountType);
     }
 
     @Override public String toString() {

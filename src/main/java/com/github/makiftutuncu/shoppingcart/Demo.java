@@ -15,7 +15,7 @@ public class Demo {
         Product water  = new Product("Water", 50, food);
 
         Campaign oneLiraOffForTwoFoods    = Campaign.ofAmount(food, 2, 100);
-        Campaign tenPercentOffThreeFruits = Campaign.ofRate(fruit, 2, 0.10);
+        Campaign tenPercentOffTwoFruits = Campaign.ofRate(fruit, 2, 0.10);
 
         Coupon fiveLirasOffCartForTwentyFiveLiras = Coupon.ofAmount(2500, 500);
         Coupon twoPercentOffCartForTwentyLiras    = Coupon.ofRate(2000, 0.02);
@@ -25,7 +25,7 @@ public class Demo {
             .addProduct(apple, 4)
             .addProduct(orange, 5)
             .addProduct(water, 1)
-            .addCampaigns(oneLiraOffForTwoFoods, tenPercentOffThreeFruits)
+            .addCampaigns(oneLiraOffForTwoFoods, tenPercentOffTwoFruits)
             .addCoupons(fiveLirasOffCartForTwentyFiveLiras, twoPercentOffCartForTwentyLiras);
 
         cart.print();

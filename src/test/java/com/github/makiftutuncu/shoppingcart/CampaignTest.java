@@ -37,6 +37,8 @@ class CampaignTest {
 
     @Test void calculateDiscountBasedOnAmount() {
         Campaign campaign = Campaign.ofAmount(food, 1, 100);
+        assertEquals(campaign.discountFor(-1), 0);
+        assertEquals(campaign.discountFor(0), 0);
         assertEquals(campaign.discountFor(300), 100);
         assertEquals(campaign.discountFor(500), 100);
     }
@@ -50,6 +52,8 @@ class CampaignTest {
 
     @Test void calculateDiscountBasedOnRate() {
         Campaign campaign = Campaign.ofRate(food, 2, 0.20);
+        assertEquals(campaign.discountFor(-1), 0);
+        assertEquals(campaign.discountFor(0), 0);
         assertEquals(campaign.discountFor(300), 60);
         assertEquals(campaign.discountFor(500), 100);
     }

@@ -16,32 +16,106 @@ public class ShoppingCart {
     }
 
     public ShoppingCart addProduct(Product product, int quantity) {
+        CartItem newCartItem = new CartItem(product, quantity);
+
         UUID productId = product.id();
 
         CartItem cartItem = items.containsKey(productId) ?
                 items.get(productId).addingQuantity(quantity) :
-                new CartItem(product, quantity);
+                newCartItem;
 
         items.put(productId, cartItem);
 
         Category category = product.category();
         List<CartItem> items = groupedItems.getOrDefault(category, new ArrayList<>());
-        items.add(cartItem);
+        if (!items.contains(cartItem)) {
+            items.add(cartItem);
+        }
         groupedItems.put(category, items);
 
         return this;
     }
 
     public ShoppingCart addCampaigns(Campaign campaign, Campaign... otherCampaigns) {
+        if (campaign == null || otherCampaigns == null || Arrays.stream(otherCampaigns).anyMatch(Objects::isNull)) throw new IllegalArgumentException("Shopping cart campaigns cannot be null!");
         campaigns.add(campaign);
         campaigns.addAll(Arrays.asList(otherCampaigns));
         return this;
     }
 
     public ShoppingCart addCoupons(Coupon coupon, Coupon... otherCoupons) {
+        if (coupon == null || otherCoupons == null || Arrays.stream(otherCoupons).anyMatch(Objects::isNull)) throw new IllegalArgumentException("Shopping cart coupons cannot be null!");
         coupons.add(coupon);
         coupons.addAll(Arrays.asList(otherCoupons));
         return this;
+    }
+
+    public int[] calculateAmounts() {
+        int totalAmount = 0;
+        int totalCampaignDiscount = 0;
+
+        for (Map.Entry<Category, List<CartItem>> entry : groupedItems.entrySet()) {
+            int totalAmountForCategory =
+                    entry.getValue()
+                         .stream()
+                         .map(CartItem::totalAmount)
+                         .reduce(0, Integer::sum);
+
+            totalAmount += totalAmountForCategory;
+
+            int campaignDiscount = findBestCampaignFor(entry.getKey())
+                    .map(campaign -> campaign.discountFor(totalAmountForCategory))
+                    .orElse(0);
+
+            totalCampaignDiscount += campaignDiscount;
+        }
+
+        int cartAmount = totalAmount - totalCampaignDiscount;
+
+        int couponDiscount = findBestCoupon(cartAmount).map(coupon -> coupon.discountFor(cartAmount)).orElse(0);
+
+        return new int[] { totalAmount, totalCampaignDiscount, couponDiscount };
+    }
+
+    public int campaignDiscount() {
+        int[] amounts = calculateAmounts();
+        return amounts[1];
+    }
+
+    public int couponDiscount() {
+        int[] amounts = calculateAmounts();
+        return amounts[2];
+    }
+
+    public int totalAmountAfterDiscounts() {
+        int[] amounts = calculateAmounts();
+
+        return amounts[0] - amounts[1] - amounts[2];
+    }
+
+    public int deliveryCost() {
+        return deliveryCostCalculator.calculateFor(groupedItems.keySet().size(), items.size());
+    }
+
+    public Optional<Campaign> findBestCampaignFor(Category category) {
+        List<CartItem> itemsInCategory =
+                items.values()
+                        .stream()
+                        .filter(item -> item.product().category().isChild(category) || item.product().category().equals(category))
+                        .collect(Collectors.toList());
+
+        int numberOfItemsInCategory = itemsInCategory.size();
+        int totalAmountForCategory  = itemsInCategory.stream().map(CartItem::totalAmount).reduce(0, Integer::sum);
+
+        return campaigns.stream()
+                .filter(campaign -> campaign.category().equals(category) && numberOfItemsInCategory >= campaign.numberOfItems())
+                .max(Comparator.comparingInt(c -> c.discountFor(totalAmountForCategory)));
+    }
+
+    public Optional<Coupon> findBestCoupon(int cartAmount) {
+        return coupons.stream()
+                .filter(c -> c.minimumAmount() <= cartAmount)
+                .max(Comparator.comparingInt(c -> c.discountFor(cartAmount)));
     }
 
     public void print() {
@@ -119,30 +193,5 @@ public class ShoppingCart {
 
     @Override public String toString() {
         return String.format("Shopping cart with %d item(s)", items.size());
-    }
-
-    private int deliveryCost() {
-        return deliveryCostCalculator.calculateFor(groupedItems.keySet().size(), items.size());
-    }
-
-    private Optional<Campaign> findBestCampaignFor(Category category) {
-        List<CartItem> itemsInCategory =
-            items.values()
-                 .stream()
-                 .filter(item -> item.product().category().isChild(category) || item.product().category().equals(category))
-                 .collect(Collectors.toList());
-
-        int numberOfItemsInCategory = itemsInCategory.size();
-        int totalAmountForCategory  = itemsInCategory.stream().map(CartItem::totalAmount).reduce(0, Integer::sum);
-
-        return campaigns.stream()
-                .filter(campaign -> campaign.category().equals(category) && numberOfItemsInCategory >= campaign.numberOfItems())
-                .max(Comparator.comparingInt(c -> c.discountFor(totalAmountForCategory)));
-    }
-
-    private Optional<Coupon> findBestCoupon(int cartAmount) {
-        return coupons.stream()
-                      .filter(c -> c.minimumAmount() <= cartAmount)
-                      .max(Comparator.comparingInt(c -> c.discountFor(cartAmount)));
     }
 }
