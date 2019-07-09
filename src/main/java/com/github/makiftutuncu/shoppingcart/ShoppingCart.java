@@ -13,6 +13,7 @@ public class ShoppingCart {
     private Map<Category, List<CartItem>> groupedItems = new HashMap<>();
     private List<Campaign> campaigns                   = new ArrayList<>();
     private List<Coupon> coupons                       = new ArrayList<>();
+    private Set<Campaign> usedCampaigns                = new HashSet<>();
 
     private DeliveryCostCalculator deliveryCostCalculator;
 
@@ -93,6 +94,8 @@ public class ShoppingCart {
         int totalAmount = 0;
         int totalCampaignDiscount = 0;
 
+        usedCampaigns.clear();
+
         for (Map.Entry<Category, List<CartItem>> entry : groupedItems.entrySet()) {
             int totalAmountForCategory =
                     entry.getValue()
@@ -103,7 +106,10 @@ public class ShoppingCart {
             totalAmount += totalAmountForCategory;
 
             int campaignDiscount = findBestCampaignFor(entry.getKey())
-                    .map(campaign -> campaign.discountFor(totalAmountForCategory))
+                    .map(campaign -> {
+                        usedCampaigns.add(campaign);
+                        return campaign.discountFor(totalAmountForCategory);
+                    })
                     .orElse(0);
 
             totalCampaignDiscount += campaignDiscount;
@@ -174,7 +180,7 @@ public class ShoppingCart {
         int totalAmountForCategory  = itemsInCategory.stream().map(CartItem::totalAmount).reduce(0, Integer::sum);
 
         return campaigns.stream()
-                .filter(campaign -> campaign.category().equals(category) && numberOfItemsInCategory >= campaign.numberOfItems())
+                .filter(campaign -> !usedCampaigns.contains(campaign) && (category.isChild(campaign.category()) || campaign.category().equals(category)) && numberOfItemsInCategory >= campaign.numberOfItems())
                 .max(Comparator.comparingInt(c -> c.discountFor(totalAmountForCategory)));
     }
 
@@ -199,6 +205,8 @@ public class ShoppingCart {
     public void print() {
         int totalAmount = 0;
         int totalCampaignDiscount = 0;
+
+        usedCampaigns.clear();
 
         for (Map.Entry<Category, List<CartItem>> entry : groupedItems.entrySet()) {
             Category category              = entry.getKey();
@@ -234,6 +242,7 @@ public class ShoppingCart {
             int campaignDiscount = findBestCampaignFor(category)
                     .map(campaign -> {
                         int discount = campaign.discountFor(totalAmountForCategory);
+                        usedCampaigns.add(campaign);
                         System.out.printf("Applied Campaign: %s\n", campaign.toString());
                         System.out.printf("Discount        : -%s\n\n", MoneyPrinter.print(discount));
                         return discount;

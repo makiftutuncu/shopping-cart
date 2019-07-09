@@ -133,7 +133,7 @@ class ShoppingCartTest {
         assertEquals(cart.couponDiscount(), 500);
     }
 
-    @Test void calculateAmounts() {
+    @Test void calculateAmountsWithDefaultCart() {
         prepareDefaultCart();
 
         int[] amounts = cart.calculateAmounts();
@@ -141,6 +141,19 @@ class ShoppingCartTest {
         assertEquals(amounts[0], 2950);
         assertEquals(amounts[1], 260);
         assertEquals(amounts[2], 500);
+    }
+
+    @Test void calculateAmountsWithMultipleCampaignsOnSameCategory() {
+        Campaign foodCampaign1 = Campaign.ofAmount(food, 1, 100);
+        Campaign foodCampaign2 = Campaign.ofRate(food, 1, 0.05);
+
+        cart.addCampaigns(foodCampaign1, foodCampaign2).addProduct(orange, 5).addProduct(milk, 1);
+
+        int[] amounts = cart.calculateAmounts();
+
+        assertEquals(amounts[0], 1500);
+        assertEquals(amounts[1], 150);
+        assertEquals(amounts[2], 0);
     }
 
     @Test void campaignDiscount() {
