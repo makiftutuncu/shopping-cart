@@ -1,0 +1,117 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DeliveryCostCalculator</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">com.github.makiftutuncu.shoppingcart</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DeliveryCostCalculator (com.github.makiftutuncu.shoppingcart)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DeliveryCostCalculator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/ 13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package com.github.makiftutuncu.shoppingcart;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;public class DeliveryCostCalculator {
+<i>4</i>&nbsp;    private int costPerCategory;
+<i>5</i>&nbsp;    private int costPerProduct;
+<i>6</i>&nbsp;    private int fixedCost;
+<i>7</i>&nbsp;
+<b class="fc"><i>8</i>&nbsp;    public DeliveryCostCalculator(int costPerCategory, int costPerProduct, int fixedCost) {</b>
+<b class="fc"><i>9</i>&nbsp;        setCostPerCategory(costPerCategory);</b>
+<b class="fc"><i>10</i>&nbsp;        setCostPerProduct(costPerProduct);</b>
+<b class="fc"><i>11</i>&nbsp;        setFixedCost(fixedCost);</b>
+<i>12</i>&nbsp;    }
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;    public int calculateFor(int numberOfCategories, int numberOfItems) {
+<b class="fc"><i>15</i>&nbsp;        if (numberOfCategories &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator number of categories must be positive!&quot;);</b>
+<b class="fc"><i>16</i>&nbsp;        if (numberOfItems &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator number of items must be positive!&quot;);</b>
+<b class="fc"><i>17</i>&nbsp;        return (numberOfCategories * costPerCategory) + (numberOfItems * costPerProduct) + fixedCost;</b>
+<i>18</i>&nbsp;    }
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    private void setCostPerCategory(int costPerCategory) {
+<b class="fc"><i>21</i>&nbsp;        if (costPerCategory &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator cost per category must be positive!&quot;);</b>
+<b class="fc"><i>22</i>&nbsp;        this.costPerCategory = costPerCategory;</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    private void setCostPerProduct(int costPerProduct) {
+<b class="fc"><i>26</i>&nbsp;        if (costPerProduct &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator cost per product must be positive!&quot;);</b>
+<b class="fc"><i>27</i>&nbsp;        this.costPerProduct = costPerProduct;</b>
+<i>28</i>&nbsp;    }
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    private void setFixedCost(int fixedCost) {
+<b class="fc"><i>31</i>&nbsp;        if (fixedCost &lt; 1) throw new IllegalArgumentException(&quot;Delivery cost calculator fixed cost must be positive!&quot;);</b>
+<b class="fc"><i>32</i>&nbsp;        this.fixedCost = fixedCost;</b>
+<i>33</i>&nbsp;    }
+<i>34</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2019-07-09 17:18</div>
+</div>
+</body>
+</html>
