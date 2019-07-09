@@ -25,3 +25,7 @@ test {
         events "passed", "skipped", "failed"
     }
 }
+
+javadoc {
+    options.encoding = 'UTF-8'
+}

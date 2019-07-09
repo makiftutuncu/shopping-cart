@@ -2,6 +2,11 @@ package com.github.makiftutuncu.shoppingcart;
 
 import java.util.Objects;
 
+/**
+ * Campaign is a way to make discounts on a specific {@link com.github.makiftutuncu.shoppingcart.Category}.
+ * It is valid for a specific number of different products in a specific category (or its parents).
+ * Campaign discounts are either fixed amounts or rates, see {@link com.github.makiftutuncu.shoppingcart.DiscountType}
+ */
 public class Campaign {
     private Category category;
     private int numberOfItems;
@@ -15,26 +20,57 @@ public class Campaign {
         setDiscountType(discountType);
     }
 
+    /**
+     * Creates an amount-based campaign
+     *
+     * @param category      Category of the campaign, cannot be null
+     * @param numberOfItems Number of items for the campaign, must be positive
+     * @param amount        Amount of discount of the campaign, must be positive
+     *
+     * @return Created campaign
+     */
     public static Campaign ofAmount(Category category, int numberOfItems, int amount) {
         Campaign campaign = new Campaign(category, numberOfItems, DiscountType.Amount);
         campaign.setAmount(amount);
         return campaign;
     }
 
+    /**
+     * Creates a rate-based campaign
+     *
+     * @param category      Category of the campaign, cannot be null
+     * @param numberOfItems Number of items for the campaign, must be positive
+     * @param rate          Rate of discount of the campaign, must be in (0, 1)
+     *
+     * @return Created campaign
+     */
     public static Campaign ofRate(Category category, int numberOfItems, double rate) {
         Campaign campaign = new Campaign(category, numberOfItems, DiscountType.Rate);
         campaign.setRate(rate);
         return campaign;
     }
 
+    /**
+     * @return Category of the campaign
+     */
     public Category category() {
         return category;
     }
 
+    /**
+     * @return Number of items for the campaign
+     */
     public int numberOfItems() {
         return numberOfItems;
     }
 
+    /**
+     * Calculates the discount amount to be applied
+     *
+     * @param totalAmount Total amount of products in this category
+     *
+     * @return Calculated amount or 0 if there won't be a discount
+     */
     public int discountFor(int totalAmount) {
         if (totalAmount < 1) return 0;
 

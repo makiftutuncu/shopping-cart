@@ -2,28 +2,53 @@ package com.github.makiftutuncu.shoppingcart;
 
 import java.util.Objects;
 
+/**
+ * Cart item represents a {@link com.github.makiftutuncu.shoppingcart.Product} that is added to the cart. It contains quantity of the product.
+ */
 public class CartItem {
     private Product product;
     private int quantity;
 
+    /**
+     * Creates a cart item
+     *
+     * @param product  Product to add to the cart, cannot be null
+     * @param quantity Quantity of the product, must be positive
+     */
     public CartItem(Product product, int quantity) {
         setProduct(product);
         setQuantity(quantity);
     }
 
+    /**
+     * @return Product of the cart item
+     */
     public Product product() {
         return product;
     }
 
+    /**
+     * @return Quantity of product of the cart item
+     */
     public int quantity() {
         return quantity;
     }
 
+    /**
+     * Modifies quantity by adding given quantity
+     *
+     * @param quantity Quantity to add
+     *
+     * @return Cart item itself after modification
+     */
     public CartItem addingQuantity(int quantity) {
         setQuantity(this.quantity + quantity);
         return this;
     }
 
+    /**
+     * @return Total amount of the cart item based on unit price x quantity
+     */
     public int totalAmount() {
         return quantity * product.price();
     }

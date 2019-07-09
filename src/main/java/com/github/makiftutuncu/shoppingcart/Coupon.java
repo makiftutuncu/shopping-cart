@@ -1,5 +1,10 @@
 package com.github.makiftutuncu.shoppingcart;
 
+/**
+ * Coupon is a way to make discounts on the {@link com.github.makiftutuncu.shoppingcart.ShoppingCart} itself.
+ * It is valid for a specific minimum cart amount.
+ * Coupon discounts are either fixed amounts or rates, see {@link com.github.makiftutuncu.shoppingcart.DiscountType}
+ */
 public class Coupon {
     private int minimumAmount;
     private int amount;
@@ -11,22 +16,48 @@ public class Coupon {
         setDiscountType(discountType);
     }
 
+    /**
+     * Creates an amount-based coupon
+     *
+     * @param minimumAmount Minimum cart amount for the coupon, must be positive
+     * @param amount        Amount of discount of the coupon, must be positive
+     *
+     * @return Created coupon
+     */
     public static Coupon ofAmount(int minimumAmount, int amount) {
         Coupon coupon = new Coupon(minimumAmount, DiscountType.Amount);
         coupon.setAmount(amount);
         return coupon;
     }
 
+    /**
+     * Creates a rate-based coupon
+     *
+     * @param minimumAmount Minimum cart amount for the coupon, must be positive
+     * @param rate          Rate of discount of the coupon, must be in (0, 1)
+     *
+     * @return Created coupon
+     */
     public static Coupon ofRate(int minimumAmount, double rate) {
         Coupon coupon = new Coupon(minimumAmount, DiscountType.Rate);
         coupon.setRate(rate);
         return coupon;
     }
 
+    /**
+     * @return Minimum amount of the coupon
+     */
     public int minimumAmount() {
         return minimumAmount;
     }
 
+    /**
+     * Calculates the discount amount to be applied
+     *
+     * @param cartAmount Amount of the cart
+     *
+     * @return Calculated amount or 0 if there won't be a discount
+     */
     public int discountFor(int cartAmount) {
         if (cartAmount < minimumAmount) return 0;
 

@@ -3,6 +3,11 @@ package com.github.makiftutuncu.shoppingcart;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a shopping cart to which {@link com.github.makiftutuncu.shoppingcart.Product}s,
+ * {@link com.github.makiftutuncu.shoppingcart.Campaign}s, {@link com.github.makiftutuncu.shoppingcart.Coupon}s
+ * can be added.
+ */
 public class ShoppingCart {
     private Map<UUID, CartItem> items                  = new HashMap<>();
     private Map<Category, List<CartItem>> groupedItems = new HashMap<>();
@@ -11,10 +16,23 @@ public class ShoppingCart {
 
     private DeliveryCostCalculator deliveryCostCalculator;
 
+    /**
+     * Creates a shopping cart
+     *
+     * @param deliveryCostCalculator {@link com.github.makiftutuncu.shoppingcart.DeliveryCostCalculator} to calculate delivery costs
+     */
     public ShoppingCart(DeliveryCostCalculator deliveryCostCalculator) {
         this.deliveryCostCalculator = deliveryCostCalculator;
     }
 
+    /**
+     * Adds a product of given quantity to the cart, if it is added before, increases the quantity
+     *
+     * @param product  Product to add, cannot be null
+     * @param quantity Quantity to add, must be positive
+     *
+     * @return Shopping cart itself after adding for chaining
+     */
     public ShoppingCart addProduct(Product product, int quantity) {
         CartItem newCartItem = new CartItem(product, quantity);
 
@@ -36,6 +54,14 @@ public class ShoppingCart {
         return this;
     }
 
+    /**
+     * Adds one or more campaigns to the cart
+     *
+     * @param campaign       A campaign to add, cannot be null
+     * @param otherCampaigns Variable number of other campaigns to add, cannot be null or contain null campaigns
+     *
+     * @return Shopping cart itself after adding for chaining
+     */
     public ShoppingCart addCampaigns(Campaign campaign, Campaign... otherCampaigns) {
         if (campaign == null || otherCampaigns == null || Arrays.stream(otherCampaigns).anyMatch(Objects::isNull)) throw new IllegalArgumentException("Shopping cart campaigns cannot be null!");
         campaigns.add(campaign);
@@ -43,6 +69,14 @@ public class ShoppingCart {
         return this;
     }
 
+    /**
+     * Adds one or more coupons to the cart
+     *
+     * @param coupon       A coupon to add, cannot be null
+     * @param otherCoupons Variable number of other coupons to add, cannot be null or contain null coupons
+     *
+     * @return Shopping cart itself after adding for chaining
+     */
     public ShoppingCart addCoupons(Coupon coupon, Coupon... otherCoupons) {
         if (coupon == null || otherCoupons == null || Arrays.stream(otherCoupons).anyMatch(Objects::isNull)) throw new IllegalArgumentException("Shopping cart coupons cannot be null!");
         coupons.add(coupon);
@@ -50,6 +84,11 @@ public class ShoppingCart {
         return this;
     }
 
+    /**
+     * Calculates cart total, total campaign discounts and total coupon discounts by processing all items in the cart
+     *
+     * @return An int array of size 3 containing cart total, total campaign discounts and total coupon discounts respectively
+     */
     public int[] calculateAmounts() {
         int totalAmount = 0;
         int totalCampaignDiscount = 0;
@@ -77,26 +116,53 @@ public class ShoppingCart {
         return new int[] { totalAmount, totalCampaignDiscount, couponDiscount };
     }
 
+    /**
+     * Calculates total campaign discounts by processing all items in the cart
+     *
+     * @return Total campaign discounts
+     */
     public int campaignDiscount() {
         int[] amounts = calculateAmounts();
         return amounts[1];
     }
 
+    /**
+     * Calculates total coupon discounts by processing all items in the cart
+     *
+     * @return Total coupon discounts
+     */
     public int couponDiscount() {
         int[] amounts = calculateAmounts();
         return amounts[2];
     }
 
+    /**
+     * Calculates cart total after applying total campaign discounts and total coupon discounts by processing all items in the cart
+     *
+     * @return Cart total after applying total campaign discounts and total coupon discounts
+     */
     public int totalAmountAfterDiscounts() {
         int[] amounts = calculateAmounts();
 
         return amounts[0] - amounts[1] - amounts[2];
     }
 
+    /**
+     * Calculates delivery cost for the items in the cart
+     *
+     * @return Delivery cost
+     */
     public int deliveryCost() {
         return deliveryCostCalculator.calculateFor(groupedItems.keySet().size(), items.size());
     }
 
+    /**
+     * Finds campaign that makes the most discount for given category
+     *
+     * @param category Category for which best campaign is sought
+     *
+     * @return Best campaign optionally if found or `Optional.empty()`
+     */
     public Optional<Campaign> findBestCampaignFor(Category category) {
         List<CartItem> itemsInCategory =
                 items.values()
@@ -112,12 +178,24 @@ public class ShoppingCart {
                 .max(Comparator.comparingInt(c -> c.discountFor(totalAmountForCategory)));
     }
 
+    /**
+     * Finds coupon that makes the most discount for given cart amount
+     *
+     * @param cartAmount Cart amount for which best coupon is sought
+     *
+     * @return Best coupon optionally if found or `Optional.empty()`
+     */
     public Optional<Coupon> findBestCoupon(int cartAmount) {
         return coupons.stream()
                 .filter(c -> c.minimumAmount() <= cartAmount)
                 .max(Comparator.comparingInt(c -> c.discountFor(cartAmount)));
     }
 
+    /**
+     * Prints out categories of items with their quantities and prices,
+     * applied discounts by campaigns and coupons,
+     * delivery cost and the final amount of the cart
+     */
     public void print() {
         int totalAmount = 0;
         int totalCampaignDiscount = 0;
