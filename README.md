@@ -29,5 +29,5 @@ This project has automated tests written with [JUnit 5](https://junit.org/junit5
 
 ## Notes
 
-There can only be additions to the cart at the moment due to limited scope of the project.
+There can only be additions to the cart at the moment due to limited scope of the project. Money values are handled in denominated way as integers ($1.00 = 100).
 
