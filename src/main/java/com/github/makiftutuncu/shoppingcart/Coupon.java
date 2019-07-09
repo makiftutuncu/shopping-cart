@@ -6,19 +6,21 @@ public class Coupon {
     private double rate;
     private DiscountType discountType;
 
-    private Coupon(int minimumAmount, int amount, double rate, DiscountType discountType) {
+    private Coupon(int minimumAmount, DiscountType discountType) {
         setMinimumAmount(minimumAmount);
-        setAmount(amount);
-        setRate(rate);
         setDiscountType(discountType);
     }
 
     public static Coupon ofAmount(int minimumAmount, int amount) {
-        return new Coupon(minimumAmount, amount, 0.0, DiscountType.Amount);
+        Coupon coupon = new Coupon(minimumAmount, DiscountType.Amount);
+        coupon.setAmount(amount);
+        return coupon;
     }
 
     public static Coupon ofRate(int minimumAmount, double rate) {
-        return new Coupon(minimumAmount, 0, rate, DiscountType.Rate);
+        Coupon coupon = new Coupon(minimumAmount, DiscountType.Rate);
+        coupon.setRate(rate);
+        return coupon;
     }
 
     public int minimumAmount() {
@@ -26,6 +28,8 @@ public class Coupon {
     }
 
     public int discountFor(int cartAmount) {
+        if (cartAmount < minimumAmount) return 0;
+
         switch (discountType) {
             case Rate:   return ((int) (cartAmount * rate));
             case Amount: return amount;
@@ -42,22 +46,23 @@ public class Coupon {
     }
 
     private void setMinimumAmount(int minimumAmount) {
-        // TODO: Validate
+        if (minimumAmount < 1) throw new IllegalArgumentException("Coupon minimum amount must be positive!");
         this.minimumAmount = minimumAmount;
     }
 
     private void setAmount(int amount) {
-        // TODO: Validate
+        if (amount < 1) throw new IllegalArgumentException("Coupon amount must be positive!");
         this.amount = amount;
+        this.rate = 0;
     }
 
     private void setRate(double rate) {
-        // TODO: Validate
+        if (rate <= 0 || rate > 1) throw new IllegalArgumentException("Coupon rate must be a valid positive percentage!");
+        this.amount = 0;
         this.rate = rate;
     }
 
     private void setDiscountType(DiscountType discountType) {
-        // TODO: Validate
         this.discountType = discountType;
     }
 }
