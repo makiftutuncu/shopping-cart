@@ -36,17 +36,17 @@ public class Product {
     }
 
     private void setTitle(String title) {
-        // TODO: Validate
+        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException("Product title cannot be null or empty!");
         this.title = title;
     }
 
     private void setPrice(int price) {
-        // TODO: Validate
+        if (price < 1) throw new IllegalArgumentException("Product price must be positive!");
         this.price = price;
     }
 
     public void setCategory(Category category) {
-        // TODO: Validate
+        if (category == null) throw new IllegalArgumentException("Product category cannot be null!");
         this.category = category;
     }
 }

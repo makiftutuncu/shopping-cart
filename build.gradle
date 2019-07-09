@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-mainClassName = "com.github.makiftutuncu.shoppingcart.Main"
+mainClassName = "com.github.makiftutuncu.shoppingcart.Demo"
 
 group 'com.github.makiftutuncu'
 version '0.1.0'

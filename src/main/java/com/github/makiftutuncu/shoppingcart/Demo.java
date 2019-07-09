@@ -1,6 +1,6 @@
 package com.github.makiftutuncu.shoppingcart;
 
-public class Main {
+public class Demo {
     public static void main(String[] args) {
         DeliveryCostCalculator calculator = new DeliveryCostCalculator(100, 50, 299);
         ShoppingCart cart = new ShoppingCart(calculator);
