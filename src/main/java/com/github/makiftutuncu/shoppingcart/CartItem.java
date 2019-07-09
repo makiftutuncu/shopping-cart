@@ -26,17 +26,17 @@ public class CartItem {
         return quantity * product.price();
     }
 
+    @Override public String toString() {
+        return String.format("%s x %d = %s", product.title(), quantity, MoneyPrinter.print(totalAmount()));
+    }
+
     private void setProduct(Product product) {
-        // TODO: Validate
+        if (product == null) throw new IllegalArgumentException("Cart item product cannot be null!");
         this.product = product;
     }
 
     private void setQuantity(int quantity) {
-        // TODO: Validate
+        if (quantity < 1) throw new IllegalArgumentException("Cart item quantity must be positive!");
         this.quantity = quantity;
-    }
-
-    @Override public String toString() {
-        return String.format("%s x %d = %s", product.title(), quantity, MoneyPrinter.print(totalAmount()));
     }
 }

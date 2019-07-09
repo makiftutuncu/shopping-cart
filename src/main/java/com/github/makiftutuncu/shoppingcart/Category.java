@@ -25,7 +25,10 @@ public class Category {
     }
 
     public boolean isChild(Category parent) {
-        return parent().map(p -> p.equals(parent)).orElse(false);
+        if (this.parent == null) return false;
+        if (parent == null)      return false;
+
+        return this.parent.equals(parent) || this.parent.isChild(parent);
     }
 
     @Override public boolean equals(Object o) {
@@ -46,7 +49,7 @@ public class Category {
     }
 
     private void setTitle(String title) {
-        // TODO: Validate
+        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException("Category title cannot be null or empty!");
         this.title = title;
     }
 
