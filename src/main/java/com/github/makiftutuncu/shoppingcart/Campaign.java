@@ -7,20 +7,22 @@ public class Campaign {
     private double rate;
     private DiscountType discountType;
 
-    private Campaign(Category category, int numberOfItems, int amount, double rate, DiscountType discountType) {
+    private Campaign(Category category, int numberOfItems, DiscountType discountType) {
         setCategory(category);
         setNumberOfItems(numberOfItems);
-        setAmount(amount);
-        setRate(rate);
         setDiscountType(discountType);
     }
 
     public static Campaign ofAmount(Category category, int numberOfItems, int amount) {
-        return new Campaign(category, numberOfItems, amount, 0.0, DiscountType.Amount);
+        Campaign campaign = new Campaign(category, numberOfItems, DiscountType.Amount);
+        campaign.setAmount(amount);
+        return campaign;
     }
 
     public static Campaign ofRate(Category category, int numberOfItems, double rate) {
-        return new Campaign(category, numberOfItems, 0, rate, DiscountType.Rate);
+        Campaign campaign = new Campaign(category, numberOfItems, DiscountType.Rate);
+        campaign.setRate(rate);
+        return campaign;
     }
 
     public Category category() {
@@ -41,34 +43,35 @@ public class Campaign {
 
     @Override public String toString() {
         switch (discountType) {
-            case Rate:   return String.format("%.0f%% for %d or more %s", rate * 100, numberOfItems, category.title());
+            case Rate:   return String.format("%.0f%% off for %d or more %s", rate * 100, numberOfItems, category.title());
             case Amount: return String.format("%s off for %d or more %s", MoneyPrinter.print(amount), numberOfItems, category.title());
             default:     return "Campaign";
         }
     }
 
     private void setCategory(Category category) {
-        // TODO: Validate
+        if (category == null) throw new IllegalArgumentException("Campaign category cannot be null!");
         this.category = category;
     }
 
     private void setNumberOfItems(int numberOfItems) {
-        // TODO: Validate
+        if (numberOfItems < 1) throw new IllegalArgumentException("Campaign number of items must be positive!");
         this.numberOfItems = numberOfItems;
     }
 
     private void setAmount(int amount) {
-        // TODO: Validate
+        if (amount < 1) throw new IllegalArgumentException("Campaign amount must be positive!");
         this.amount = amount;
+        this.rate = 0;
     }
 
     private void setRate(double rate) {
-        // TODO: Validate
+        if (rate <= 0 || rate > 1) throw new IllegalArgumentException("Campaign rate must be a valid positive percentage!");
+        this.amount = 0;
         this.rate = rate;
     }
 
     private void setDiscountType(DiscountType discountType) {
-        // TODO: Validate
         this.discountType = discountType;
     }
 }
