@@ -53,7 +53,7 @@
     100%
   </span>
   <span class="absValue">
-    (16/ 16)
+    (10/ 10)
   </span>
 </td>
 <td class="coverageStat">
@@ -61,7 +61,7 @@
     100%
   </span>
   <span class="absValue">
-    (119/ 119)
+    (61/ 61)
   </span>
 </td>
 </tr>
@@ -75,293 +75,174 @@
 <div class="sourceCode"><i>1</i>&nbsp;package com.github.makiftutuncu.shoppingcart;
 <i>2</i>&nbsp;
 <i>3</i>&nbsp;import java.util.*;
-<i>4</i>&nbsp;import java.util.stream.Collectors;
-<i>5</i>&nbsp;
-<i>6</i>&nbsp;/**
-<i>7</i>&nbsp; * Represents a shopping cart to which {@link com.github.makiftutuncu.shoppingcart.Product}s,
-<i>8</i>&nbsp; * {@link com.github.makiftutuncu.shoppingcart.Campaign}s, {@link com.github.makiftutuncu.shoppingcart.Coupon}s
-<i>9</i>&nbsp; * can be added.
-<i>10</i>&nbsp; */
-<i>11</i>&nbsp;public class ShoppingCart {
-<b class="fc"><i>12</i>&nbsp;    private Map&lt;UUID, CartItem&gt; items                  = new HashMap&lt;&gt;();</b>
-<b class="fc"><i>13</i>&nbsp;    private Map&lt;Category, List&lt;CartItem&gt;&gt; groupedItems = new HashMap&lt;&gt;();</b>
-<b class="fc"><i>14</i>&nbsp;    private List&lt;Campaign&gt; campaigns                   = new ArrayList&lt;&gt;();</b>
-<b class="fc"><i>15</i>&nbsp;    private List&lt;Coupon&gt; coupons                       = new ArrayList&lt;&gt;();</b>
-<b class="fc"><i>16</i>&nbsp;    private Set&lt;Campaign&gt; usedCampaigns                = new HashSet&lt;&gt;();</b>
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Represents a shopping cart to which {@link com.github.makiftutuncu.shoppingcart.Product}s,
+<i>7</i>&nbsp; * {@link com.github.makiftutuncu.shoppingcart.Campaign}s, {@link com.github.makiftutuncu.shoppingcart.Coupon}s
+<i>8</i>&nbsp; * can be added.
+<i>9</i>&nbsp; */
+<i>10</i>&nbsp;public class ShoppingCart {
+<b class="fc"><i>11</i>&nbsp;    private Map&lt;UUID, CartItem&gt; items                  = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>12</i>&nbsp;    private Map&lt;Category, List&lt;CartItem&gt;&gt; groupedItems = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>13</i>&nbsp;    private List&lt;Campaign&gt; campaigns                   = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>14</i>&nbsp;    private List&lt;Coupon&gt; coupons                       = new ArrayList&lt;&gt;();</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    private DeliveryCostCalculator deliveryCostCalculator;
 <i>17</i>&nbsp;
-<i>18</i>&nbsp;    private DeliveryCostCalculator deliveryCostCalculator;
-<i>19</i>&nbsp;
-<i>20</i>&nbsp;    /**
-<i>21</i>&nbsp;     * Creates a shopping cart
-<i>22</i>&nbsp;     *
-<i>23</i>&nbsp;     * @param deliveryCostCalculator {@link com.github.makiftutuncu.shoppingcart.DeliveryCostCalculator} to calculate delivery costs
-<i>24</i>&nbsp;     */
-<b class="fc"><i>25</i>&nbsp;    public ShoppingCart(DeliveryCostCalculator deliveryCostCalculator) {</b>
-<b class="fc"><i>26</i>&nbsp;        this.deliveryCostCalculator = deliveryCostCalculator;</b>
-<b class="fc"><i>27</i>&nbsp;    }</b>
-<i>28</i>&nbsp;
-<i>29</i>&nbsp;    /**
-<i>30</i>&nbsp;     * Adds a product of given quantity to the cart, if it is added before, increases the quantity
-<i>31</i>&nbsp;     *
-<i>32</i>&nbsp;     * @param product  Product to add, cannot be null
-<i>33</i>&nbsp;     * @param quantity Quantity to add, must be positive
-<i>34</i>&nbsp;     *
-<i>35</i>&nbsp;     * @return Shopping cart itself after adding for chaining
-<i>36</i>&nbsp;     */
-<i>37</i>&nbsp;    public ShoppingCart addProduct(Product product, int quantity) {
-<b class="fc"><i>38</i>&nbsp;        CartItem newCartItem = new CartItem(product, quantity);</b>
+<i>18</i>&nbsp;    /**
+<i>19</i>&nbsp;     * Creates a shopping cart
+<i>20</i>&nbsp;     *
+<i>21</i>&nbsp;     * @param deliveryCostCalculator {@link com.github.makiftutuncu.shoppingcart.DeliveryCostCalculator} to calculate delivery costs
+<i>22</i>&nbsp;     */
+<b class="fc"><i>23</i>&nbsp;    public ShoppingCart(DeliveryCostCalculator deliveryCostCalculator) {</b>
+<b class="fc"><i>24</i>&nbsp;        this.deliveryCostCalculator = deliveryCostCalculator;</b>
+<i>25</i>&nbsp;    }
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;    /**
+<i>28</i>&nbsp;     * Adds a product of given quantity to the cart, if it is added before, increases the quantity
+<i>29</i>&nbsp;     *
+<i>30</i>&nbsp;     * @param product  Product to add, cannot be null
+<i>31</i>&nbsp;     * @param quantity Quantity to add, must be positive
+<i>32</i>&nbsp;     *
+<i>33</i>&nbsp;     * @return Shopping cart itself after adding for chaining
+<i>34</i>&nbsp;     */
+<i>35</i>&nbsp;    public ShoppingCart addProduct(Product product, int quantity) {
+<b class="fc"><i>36</i>&nbsp;        CartItem newCartItem = new CartItem(product, quantity);</b>
+<i>37</i>&nbsp;
+<b class="fc"><i>38</i>&nbsp;        UUID productId = product.id();</b>
 <i>39</i>&nbsp;
-<b class="fc"><i>40</i>&nbsp;        UUID productId = product.id();</b>
-<i>41</i>&nbsp;
-<b class="fc"><i>42</i>&nbsp;        CartItem cartItem = items.containsKey(productId) ?</b>
-<b class="fc"><i>43</i>&nbsp;                items.get(productId).addingQuantity(quantity) :</b>
-<i>44</i>&nbsp;                newCartItem;
+<b class="fc"><i>40</i>&nbsp;        CartItem cartItem = items.containsKey(productId) ?</b>
+<b class="fc"><i>41</i>&nbsp;                items.get(productId).addingQuantity(quantity) :</b>
+<i>42</i>&nbsp;                newCartItem;
+<i>43</i>&nbsp;
+<b class="fc"><i>44</i>&nbsp;        items.put(productId, cartItem);</b>
 <i>45</i>&nbsp;
-<b class="fc"><i>46</i>&nbsp;        items.put(productId, cartItem);</b>
-<i>47</i>&nbsp;
-<b class="fc"><i>48</i>&nbsp;        Category category = product.category();</b>
-<b class="fc"><i>49</i>&nbsp;        List&lt;CartItem&gt; items = groupedItems.getOrDefault(category, new ArrayList&lt;&gt;());</b>
-<b class="fc"><i>50</i>&nbsp;        if (!items.contains(cartItem)) {</b>
-<b class="fc"><i>51</i>&nbsp;            items.add(cartItem);</b>
-<i>52</i>&nbsp;        }
-<b class="fc"><i>53</i>&nbsp;        groupedItems.put(category, items);</b>
-<i>54</i>&nbsp;
-<b class="fc"><i>55</i>&nbsp;        return this;</b>
-<i>56</i>&nbsp;    }
-<i>57</i>&nbsp;
-<i>58</i>&nbsp;    /**
-<i>59</i>&nbsp;     * Adds one or more campaigns to the cart
-<i>60</i>&nbsp;     *
-<i>61</i>&nbsp;     * @param campaign       A campaign to add, cannot be null
-<i>62</i>&nbsp;     * @param otherCampaigns Variable number of other campaigns to add, cannot be null or contain null campaigns
-<i>63</i>&nbsp;     *
-<i>64</i>&nbsp;     * @return Shopping cart itself after adding for chaining
-<i>65</i>&nbsp;     */
-<i>66</i>&nbsp;    public ShoppingCart addCampaigns(Campaign campaign, Campaign... otherCampaigns) {
-<b class="fc"><i>67</i>&nbsp;        if (campaign == null || otherCampaigns == null || Arrays.stream(otherCampaigns).anyMatch(Objects::isNull)) throw new IllegalArgumentException(&quot;Shopping cart campaigns cannot be null!&quot;);</b>
-<b class="fc"><i>68</i>&nbsp;        campaigns.add(campaign);</b>
-<b class="fc"><i>69</i>&nbsp;        campaigns.addAll(Arrays.asList(otherCampaigns));</b>
-<b class="fc"><i>70</i>&nbsp;        return this;</b>
-<i>71</i>&nbsp;    }
-<i>72</i>&nbsp;
-<i>73</i>&nbsp;    /**
-<i>74</i>&nbsp;     * Adds one or more coupons to the cart
-<i>75</i>&nbsp;     *
-<i>76</i>&nbsp;     * @param coupon       A coupon to add, cannot be null
-<i>77</i>&nbsp;     * @param otherCoupons Variable number of other coupons to add, cannot be null or contain null coupons
-<i>78</i>&nbsp;     *
-<i>79</i>&nbsp;     * @return Shopping cart itself after adding for chaining
-<i>80</i>&nbsp;     */
-<i>81</i>&nbsp;    public ShoppingCart addCoupons(Coupon coupon, Coupon... otherCoupons) {
-<b class="fc"><i>82</i>&nbsp;        if (coupon == null || otherCoupons == null || Arrays.stream(otherCoupons).anyMatch(Objects::isNull)) throw new IllegalArgumentException(&quot;Shopping cart coupons cannot be null!&quot;);</b>
-<b class="fc"><i>83</i>&nbsp;        coupons.add(coupon);</b>
-<b class="fc"><i>84</i>&nbsp;        coupons.addAll(Arrays.asList(otherCoupons));</b>
-<b class="fc"><i>85</i>&nbsp;        return this;</b>
-<i>86</i>&nbsp;    }
-<i>87</i>&nbsp;
-<i>88</i>&nbsp;    /**
-<i>89</i>&nbsp;     * Calculates cart total, total campaign discounts and total coupon discounts by processing all items in the cart
-<i>90</i>&nbsp;     *
-<i>91</i>&nbsp;     * @return An int array of size 3 containing cart total, total campaign discounts and total coupon discounts respectively
-<i>92</i>&nbsp;     */
-<i>93</i>&nbsp;    public int[] calculateAmounts() {
-<b class="fc"><i>94</i>&nbsp;        int totalAmount = 0;</b>
-<b class="fc"><i>95</i>&nbsp;        int totalCampaignDiscount = 0;</b>
-<i>96</i>&nbsp;
-<b class="fc"><i>97</i>&nbsp;        usedCampaigns.clear();</b>
-<i>98</i>&nbsp;
-<b class="fc"><i>99</i>&nbsp;        for (Map.Entry&lt;Category, List&lt;CartItem&gt;&gt; entry : groupedItems.entrySet()) {</b>
-<b class="fc"><i>100</i>&nbsp;            int totalAmountForCategory =</b>
-<b class="fc"><i>101</i>&nbsp;                    entry.getValue()</b>
-<b class="fc"><i>102</i>&nbsp;                         .stream()</b>
-<b class="fc"><i>103</i>&nbsp;                         .map(CartItem::totalAmount)</b>
-<b class="fc"><i>104</i>&nbsp;                         .reduce(0, Integer::sum);</b>
-<i>105</i>&nbsp;
-<b class="fc"><i>106</i>&nbsp;            totalAmount += totalAmountForCategory;</b>
-<i>107</i>&nbsp;
-<b class="fc"><i>108</i>&nbsp;            int campaignDiscount = findBestCampaignFor(entry.getKey())</b>
-<b class="fc"><i>109</i>&nbsp;                    .map(campaign -&gt; {</b>
-<b class="fc"><i>110</i>&nbsp;                        usedCampaigns.add(campaign);</b>
-<b class="fc"><i>111</i>&nbsp;                        return campaign.discountFor(totalAmountForCategory);</b>
-<i>112</i>&nbsp;                    })
-<b class="fc"><i>113</i>&nbsp;                    .orElse(0);</b>
-<i>114</i>&nbsp;
-<b class="fc"><i>115</i>&nbsp;            totalCampaignDiscount += campaignDiscount;</b>
-<b class="fc"><i>116</i>&nbsp;        }</b>
-<i>117</i>&nbsp;
-<b class="fc"><i>118</i>&nbsp;        int cartAmount = totalAmount - totalCampaignDiscount;</b>
+<b class="fc"><i>46</i>&nbsp;        Category category = product.category();</b>
+<b class="fc"><i>47</i>&nbsp;        List&lt;CartItem&gt; items = groupedItems.getOrDefault(category, new ArrayList&lt;&gt;());</b>
+<b class="fc"><i>48</i>&nbsp;        if (!items.contains(cartItem)) {</b>
+<b class="fc"><i>49</i>&nbsp;            items.add(cartItem);</b>
+<i>50</i>&nbsp;        }
+<b class="fc"><i>51</i>&nbsp;        groupedItems.put(category, items);</b>
+<i>52</i>&nbsp;
+<b class="fc"><i>53</i>&nbsp;        return this;</b>
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * Adds one or more campaigns to the cart
+<i>58</i>&nbsp;     *
+<i>59</i>&nbsp;     * @param campaign       A campaign to add, cannot be null
+<i>60</i>&nbsp;     * @param otherCampaigns Variable number of other campaigns to add, cannot be null or contain null campaigns
+<i>61</i>&nbsp;     *
+<i>62</i>&nbsp;     * @return Shopping cart itself after adding for chaining
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    public ShoppingCart addCampaigns(Campaign campaign, Campaign... otherCampaigns) {
+<b class="pc"><i>65</i>&nbsp;        if (campaign == null || otherCampaigns == null || Arrays.stream(otherCampaigns).anyMatch(Objects::isNull)) throw new IllegalArgumentException(&quot;Shopping cart campaigns cannot be null!&quot;);</b>
+<b class="fc"><i>66</i>&nbsp;        campaigns.add(campaign);</b>
+<b class="fc"><i>67</i>&nbsp;        campaigns.addAll(Arrays.asList(otherCampaigns));</b>
+<b class="fc"><i>68</i>&nbsp;        return this;</b>
+<i>69</i>&nbsp;    }
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;    /**
+<i>72</i>&nbsp;     * Adds one or more coupons to the cart
+<i>73</i>&nbsp;     *
+<i>74</i>&nbsp;     * @param coupon       A coupon to add, cannot be null
+<i>75</i>&nbsp;     * @param otherCoupons Variable number of other coupons to add, cannot be null or contain null coupons
+<i>76</i>&nbsp;     *
+<i>77</i>&nbsp;     * @return Shopping cart itself after adding for chaining
+<i>78</i>&nbsp;     */
+<i>79</i>&nbsp;    public ShoppingCart addCoupons(Coupon coupon, Coupon... otherCoupons) {
+<b class="pc"><i>80</i>&nbsp;        if (coupon == null || otherCoupons == null || Arrays.stream(otherCoupons).anyMatch(Objects::isNull)) throw new IllegalArgumentException(&quot;Shopping cart coupons cannot be null!&quot;);</b>
+<b class="fc"><i>81</i>&nbsp;        coupons.add(coupon);</b>
+<b class="fc"><i>82</i>&nbsp;        coupons.addAll(Arrays.asList(otherCoupons));</b>
+<b class="fc"><i>83</i>&nbsp;        return this;</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Processes all items, campaigns and coupons
+<i>88</i>&nbsp;     *
+<i>89</i>&nbsp;     * @return A {@link com.github.makiftutuncu.shoppingcart.Checkout} containing calculated values
+<i>90</i>&nbsp;     */
+<i>91</i>&nbsp;    public Checkout checkout() {
+<b class="fc"><i>92</i>&nbsp;        return Checkout.calculate(items, groupedItems, campaigns, coupons);</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    /**
+<i>96</i>&nbsp;     * Calculates delivery cost for the items in the cart
+<i>97</i>&nbsp;     *
+<i>98</i>&nbsp;     * @return Delivery cost
+<i>99</i>&nbsp;     */
+<i>100</i>&nbsp;    public int deliveryCost() {
+<b class="fc"><i>101</i>&nbsp;        return deliveryCostCalculator.calculateFor(groupedItems.keySet().size(), items.size());</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * Prints out categories of items with their quantities and prices,
+<i>106</i>&nbsp;     * applied discounts by campaigns and coupons,
+<i>107</i>&nbsp;     * delivery cost and the final amount of the cart
+<i>108</i>&nbsp;     */
+<i>109</i>&nbsp;    public void print() {
+<b class="fc"><i>110</i>&nbsp;        Checkout checkout = checkout();</b>
+<i>111</i>&nbsp;
+<b class="fc"><i>112</i>&nbsp;        for (Map.Entry&lt;Category, List&lt;CartItem&gt;&gt; entry : groupedItems.entrySet()) {</b>
+<b class="fc"><i>113</i>&nbsp;            Category category              = entry.getKey();</b>
+<b class="fc"><i>114</i>&nbsp;            List&lt;CartItem&gt; itemsInCategory = entry.getValue();</b>
+<i>115</i>&nbsp;
+<b class="fc"><i>116</i>&nbsp;            System.out.println(&quot;================================&quot;);</b>
+<b class="fc"><i>117</i>&nbsp;            System.out.println(category.title());</b>
+<b class="fc"><i>118</i>&nbsp;            System.out.println(&quot;================================&quot;);</b>
 <i>119</i>&nbsp;
-<b class="fc"><i>120</i>&nbsp;        int couponDiscount = findBestCoupon(cartAmount).map(coupon -&gt; coupon.discountFor(cartAmount)).orElse(0);</b>
-<i>121</i>&nbsp;
-<b class="fc"><i>122</i>&nbsp;        return new int[] { totalAmount, totalCampaignDiscount, couponDiscount };</b>
-<i>123</i>&nbsp;    }
+<b class="fc"><i>120</i>&nbsp;            for (CartItem item : itemsInCategory) {</b>
+<b class="fc"><i>121</i>&nbsp;                Product product = item.product();</b>
+<i>122</i>&nbsp;
+<b class="fc"><i>123</i>&nbsp;                System.out.printf(&quot;%s x %d\n&quot;,  product.title(), item.quantity());</b>
 <i>124</i>&nbsp;
-<i>125</i>&nbsp;    /**
-<i>126</i>&nbsp;     * Calculates total campaign discounts by processing all items in the cart
-<i>127</i>&nbsp;     *
-<i>128</i>&nbsp;     * @return Total campaign discounts
-<i>129</i>&nbsp;     */
-<i>130</i>&nbsp;    public int campaignDiscount() {
-<b class="fc"><i>131</i>&nbsp;        int[] amounts = calculateAmounts();</b>
-<b class="fc"><i>132</i>&nbsp;        return amounts[1];</b>
-<i>133</i>&nbsp;    }
+<b class="fc"><i>125</i>&nbsp;                if (item.quantity() &gt; 1) {</b>
+<b class="fc"><i>126</i>&nbsp;                    System.out.printf(&quot;Unit Amount : %s\n&quot;,  MoneyPrinter.print(product.price()));</b>
+<b class="fc"><i>127</i>&nbsp;                    System.out.printf(&quot;Total Amount: %s\n&quot;,  MoneyPrinter.print(item.totalAmount()));</b>
+<i>128</i>&nbsp;                } else {
+<b class="fc"><i>129</i>&nbsp;                    System.out.printf(&quot;Amount: %s\n&quot;,  MoneyPrinter.print(item.totalAmount()));</b>
+<i>130</i>&nbsp;                }
+<i>131</i>&nbsp;
+<b class="fc"><i>132</i>&nbsp;                System.out.println();</b>
+<b class="fc"><i>133</i>&nbsp;            }</b>
 <i>134</i>&nbsp;
-<i>135</i>&nbsp;    /**
-<i>136</i>&nbsp;     * Calculates total coupon discounts by processing all items in the cart
-<i>137</i>&nbsp;     *
-<i>138</i>&nbsp;     * @return Total coupon discounts
-<i>139</i>&nbsp;     */
-<i>140</i>&nbsp;    public int couponDiscount() {
-<b class="fc"><i>141</i>&nbsp;        int[] amounts = calculateAmounts();</b>
-<b class="fc"><i>142</i>&nbsp;        return amounts[2];</b>
-<i>143</i>&nbsp;    }
-<i>144</i>&nbsp;
-<i>145</i>&nbsp;    /**
-<i>146</i>&nbsp;     * Calculates cart total after applying total campaign discounts and total coupon discounts by processing all items in the cart
-<i>147</i>&nbsp;     *
-<i>148</i>&nbsp;     * @return Cart total after applying total campaign discounts and total coupon discounts
-<i>149</i>&nbsp;     */
-<i>150</i>&nbsp;    public int totalAmountAfterDiscounts() {
-<b class="fc"><i>151</i>&nbsp;        int[] amounts = calculateAmounts();</b>
-<i>152</i>&nbsp;
-<b class="fc"><i>153</i>&nbsp;        return Math.max(amounts[0] - amounts[1] - amounts[2], 0);</b>
-<i>154</i>&nbsp;    }
-<i>155</i>&nbsp;
-<i>156</i>&nbsp;    /**
-<i>157</i>&nbsp;     * Calculates delivery cost for the items in the cart
-<i>158</i>&nbsp;     *
-<i>159</i>&nbsp;     * @return Delivery cost
-<i>160</i>&nbsp;     */
-<i>161</i>&nbsp;    public int deliveryCost() {
-<b class="fc"><i>162</i>&nbsp;        return deliveryCostCalculator.calculateFor(groupedItems.keySet().size(), items.size());</b>
-<i>163</i>&nbsp;    }
-<i>164</i>&nbsp;
-<i>165</i>&nbsp;    /**
-<i>166</i>&nbsp;     * Finds campaign that makes the most discount for given category
-<i>167</i>&nbsp;     *
-<i>168</i>&nbsp;     * @param category Category for which best campaign is sought
-<i>169</i>&nbsp;     *
-<i>170</i>&nbsp;     * @return Best campaign optionally if found or `Optional.empty()`
-<i>171</i>&nbsp;     */
-<i>172</i>&nbsp;    public Optional&lt;Campaign&gt; findBestCampaignFor(Category category) {
-<b class="fc"><i>173</i>&nbsp;        List&lt;CartItem&gt; itemsInCategory =</b>
-<b class="fc"><i>174</i>&nbsp;                items.values()</b>
-<b class="fc"><i>175</i>&nbsp;                        .stream()</b>
-<b class="fc"><i>176</i>&nbsp;                        .filter(item -&gt; item.product().category().isChild(category) || item.product().category().equals(category))</b>
-<b class="fc"><i>177</i>&nbsp;                        .collect(Collectors.toList());</b>
-<i>178</i>&nbsp;
-<b class="fc"><i>179</i>&nbsp;        int numberOfItemsInCategory = itemsInCategory.size();</b>
-<b class="fc"><i>180</i>&nbsp;        int totalAmountForCategory  = itemsInCategory.stream().map(CartItem::totalAmount).reduce(0, Integer::sum);</b>
-<i>181</i>&nbsp;
-<b class="fc"><i>182</i>&nbsp;        return campaigns.stream()</b>
-<b class="fc"><i>183</i>&nbsp;                .filter(campaign -&gt; !usedCampaigns.contains(campaign) &amp;&amp; (category.isChild(campaign.category()) || campaign.category().equals(category)) &amp;&amp; numberOfItemsInCategory &gt;= campaign.numberOfItems())</b>
-<b class="fc"><i>184</i>&nbsp;                .max(Comparator.comparingInt(c -&gt; c.discountFor(totalAmountForCategory)));</b>
-<i>185</i>&nbsp;    }
-<i>186</i>&nbsp;
-<i>187</i>&nbsp;    /**
-<i>188</i>&nbsp;     * Finds coupon that makes the most discount for given cart amount
-<i>189</i>&nbsp;     *
-<i>190</i>&nbsp;     * @param cartAmount Cart amount for which best coupon is sought
-<i>191</i>&nbsp;     *
-<i>192</i>&nbsp;     * @return Best coupon optionally if found or `Optional.empty()`
-<i>193</i>&nbsp;     */
-<i>194</i>&nbsp;    public Optional&lt;Coupon&gt; findBestCoupon(int cartAmount) {
-<b class="fc"><i>195</i>&nbsp;        return coupons.stream()</b>
-<b class="fc"><i>196</i>&nbsp;                .filter(c -&gt; c.minimumAmount() &lt;= cartAmount)</b>
-<b class="fc"><i>197</i>&nbsp;                .max(Comparator.comparingInt(c -&gt; c.discountFor(cartAmount)));</b>
-<i>198</i>&nbsp;    }
-<i>199</i>&nbsp;
-<i>200</i>&nbsp;    /**
-<i>201</i>&nbsp;     * Prints out categories of items with their quantities and prices,
-<i>202</i>&nbsp;     * applied discounts by campaigns and coupons,
-<i>203</i>&nbsp;     * delivery cost and the final amount of the cart
-<i>204</i>&nbsp;     */
-<i>205</i>&nbsp;    public void print() {
-<b class="fc"><i>206</i>&nbsp;        int totalAmount = 0;</b>
-<b class="fc"><i>207</i>&nbsp;        int totalCampaignDiscount = 0;</b>
-<i>208</i>&nbsp;
-<b class="fc"><i>209</i>&nbsp;        usedCampaigns.clear();</b>
-<i>210</i>&nbsp;
-<b class="fc"><i>211</i>&nbsp;        for (Map.Entry&lt;Category, List&lt;CartItem&gt;&gt; entry : groupedItems.entrySet()) {</b>
-<b class="fc"><i>212</i>&nbsp;            Category category              = entry.getKey();</b>
-<b class="fc"><i>213</i>&nbsp;            List&lt;CartItem&gt; itemsInCategory = entry.getValue();</b>
-<i>214</i>&nbsp;
-<b class="fc"><i>215</i>&nbsp;            int temporaryTotalAmountForCategory = 0;</b>
-<i>216</i>&nbsp;
-<b class="fc"><i>217</i>&nbsp;            System.out.println(&quot;================================&quot;);</b>
-<b class="fc"><i>218</i>&nbsp;            System.out.println(category.title());</b>
-<b class="fc"><i>219</i>&nbsp;            System.out.println(&quot;================================&quot;);</b>
-<i>220</i>&nbsp;
-<b class="fc"><i>221</i>&nbsp;            for (CartItem item : itemsInCategory) {</b>
-<b class="fc"><i>222</i>&nbsp;                temporaryTotalAmountForCategory += item.totalAmount();</b>
-<i>223</i>&nbsp;
-<b class="fc"><i>224</i>&nbsp;                Product product = item.product();</b>
-<i>225</i>&nbsp;
-<b class="fc"><i>226</i>&nbsp;                System.out.printf(&quot;%s x %d\n&quot;,  product.title(), item.quantity());</b>
-<i>227</i>&nbsp;
-<b class="fc"><i>228</i>&nbsp;                if (item.quantity() &gt; 1) {</b>
-<b class="fc"><i>229</i>&nbsp;                    System.out.printf(&quot;Unit Amount : %s\n&quot;,  MoneyPrinter.print(product.price()));</b>
-<b class="fc"><i>230</i>&nbsp;                    System.out.printf(&quot;Total Amount: %s\n&quot;,  MoneyPrinter.print(item.totalAmount()));</b>
-<i>231</i>&nbsp;                } else {
-<b class="fc"><i>232</i>&nbsp;                    System.out.printf(&quot;Amount: %s\n&quot;,  MoneyPrinter.print(item.totalAmount()));</b>
-<i>233</i>&nbsp;                }
-<i>234</i>&nbsp;
-<b class="fc"><i>235</i>&nbsp;                System.out.println();</b>
-<b class="fc"><i>236</i>&nbsp;            }</b>
-<i>237</i>&nbsp;
-<b class="fc"><i>238</i>&nbsp;            final int totalAmountForCategory = temporaryTotalAmountForCategory;</b>
-<i>239</i>&nbsp;
-<b class="fc"><i>240</i>&nbsp;            totalAmount += totalAmountForCategory;</b>
-<i>241</i>&nbsp;
-<b class="fc"><i>242</i>&nbsp;            int campaignDiscount = findBestCampaignFor(category)</b>
-<b class="fc"><i>243</i>&nbsp;                    .map(campaign -&gt; {</b>
-<b class="fc"><i>244</i>&nbsp;                        int discount = campaign.discountFor(totalAmountForCategory);</b>
-<b class="fc"><i>245</i>&nbsp;                        usedCampaigns.add(campaign);</b>
-<b class="fc"><i>246</i>&nbsp;                        System.out.printf(&quot;Applied Campaign: %s\n&quot;, campaign.toString());</b>
-<b class="fc"><i>247</i>&nbsp;                        System.out.printf(&quot;Discount        : -%s\n\n&quot;, MoneyPrinter.print(discount));</b>
-<b class="fc"><i>248</i>&nbsp;                        return discount;</b>
-<i>249</i>&nbsp;                    })
-<b class="fc"><i>250</i>&nbsp;                    .orElse(0);</b>
-<i>251</i>&nbsp;
-<b class="fc"><i>252</i>&nbsp;            totalCampaignDiscount += campaignDiscount;</b>
-<b class="fc"><i>253</i>&nbsp;        }</b>
-<i>254</i>&nbsp;
-<b class="fc"><i>255</i>&nbsp;        int cartAmount   = Math.max(totalAmount - totalCampaignDiscount, 0);</b>
-<b class="fc"><i>256</i>&nbsp;        int deliveryCost = deliveryCost();</b>
-<i>257</i>&nbsp;
-<b class="fc"><i>258</i>&nbsp;        System.out.println(&quot;================================&quot;);</b>
-<b class="fc"><i>259</i>&nbsp;        System.out.println(&quot;Total Amount      :  &quot; + MoneyPrinter.print(totalAmount));</b>
-<b class="fc"><i>260</i>&nbsp;        System.out.println(&quot;Delivery Cost     :  &quot; + MoneyPrinter.print(deliveryCost));</b>
-<i>261</i>&nbsp;
-<b class="fc"><i>262</i>&nbsp;        if (totalCampaignDiscount &gt; 0) {</b>
-<b class="fc"><i>263</i>&nbsp;            System.out.println(&quot;Campaign Discounts: -&quot; + MoneyPrinter.print(totalCampaignDiscount));</b>
-<i>264</i>&nbsp;        }
-<i>265</i>&nbsp;
-<b class="fc"><i>266</i>&nbsp;        int couponDiscount = findBestCoupon(cartAmount).map(coupon -&gt; {</b>
-<b class="fc"><i>267</i>&nbsp;            int discount = coupon.discountFor(cartAmount);</b>
-<b class="fc"><i>268</i>&nbsp;            System.out.println();</b>
-<b class="fc"><i>269</i>&nbsp;            System.out.printf(&quot;Applied Coupon: %s\n&quot;, coupon.toString());</b>
-<b class="fc"><i>270</i>&nbsp;            System.out.printf(&quot;Discount      : -%s\n&quot;, MoneyPrinter.print(discount));</b>
-<b class="fc"><i>271</i>&nbsp;            return discount;</b>
-<b class="fc"><i>272</i>&nbsp;        }).orElse(0);</b>
-<i>273</i>&nbsp;
-<b class="fc"><i>274</i>&nbsp;        int finalAmount = Math.max(cartAmount - couponDiscount, 0) + deliveryCost;</b>
-<i>275</i>&nbsp;
-<b class="fc"><i>276</i>&nbsp;        System.out.println();</b>
-<b class="fc"><i>277</i>&nbsp;        System.out.println(&quot;Final Amount: &quot; + MoneyPrinter.print(finalAmount));</b>
-<b class="fc"><i>278</i>&nbsp;        System.out.println(&quot;================================&quot;);</b>
-<b class="fc"><i>279</i>&nbsp;    }</b>
-<i>280</i>&nbsp;
-<i>281</i>&nbsp;    @Override public String toString() {
-<b class="fc"><i>282</i>&nbsp;        return String.format(&quot;Shopping cart with %d item(s)&quot;, items.size());</b>
-<i>283</i>&nbsp;    }
-<i>284</i>&nbsp;}
+<b class="fc"><i>135</i>&nbsp;            Optional.ofNullable(checkout.campaignsByCategory().get(category)).ifPresent(campaign -&gt; {</b>
+<b class="fc"><i>136</i>&nbsp;                System.out.printf(&quot;Applied Campaign: %s\n&quot;, campaign.toString());</b>
+<b class="fc"><i>137</i>&nbsp;                System.out.printf(&quot;Discount        : -%s\n\n&quot;, MoneyPrinter.print(checkout.campaignDiscountsByCategory().getOrDefault(category, 0)));</b>
+<i>138</i>&nbsp;            });
+<b class="fc"><i>139</i>&nbsp;        }</b>
+<i>140</i>&nbsp;
+<b class="fc"><i>141</i>&nbsp;        int deliveryCost = deliveryCost();</b>
+<i>142</i>&nbsp;
+<b class="fc"><i>143</i>&nbsp;        System.out.println(&quot;================================&quot;);</b>
+<b class="fc"><i>144</i>&nbsp;        System.out.println(&quot;Total Amount      :  &quot; + MoneyPrinter.print(checkout.totalAmount()));</b>
+<b class="fc"><i>145</i>&nbsp;        System.out.println(&quot;Delivery Cost     :  &quot; + MoneyPrinter.print(deliveryCost));</b>
+<i>146</i>&nbsp;
+<b class="pc"><i>147</i>&nbsp;        if (checkout.totalCampaignDiscount() &gt; 0) {</b>
+<b class="fc"><i>148</i>&nbsp;            System.out.println(&quot;Campaign Discounts: -&quot; + MoneyPrinter.print(checkout.totalCampaignDiscount()));</b>
+<i>149</i>&nbsp;        }
+<i>150</i>&nbsp;
+<b class="fc"><i>151</i>&nbsp;        checkout.appliedCoupon().ifPresent(coupon -&gt; {</b>
+<b class="fc"><i>152</i>&nbsp;            System.out.println();</b>
+<b class="fc"><i>153</i>&nbsp;            System.out.printf(&quot;Applied Coupon: %s\n&quot;, coupon.toString());</b>
+<b class="fc"><i>154</i>&nbsp;            System.out.printf(&quot;Discount      : -%s\n&quot;, MoneyPrinter.print(checkout.totalCouponDiscount()));</b>
+<i>155</i>&nbsp;        });
+<i>156</i>&nbsp;
+<b class="fc"><i>157</i>&nbsp;        System.out.println();</b>
+<b class="fc"><i>158</i>&nbsp;        System.out.println(&quot;Final Amount: &quot; + MoneyPrinter.print(checkout.finalAmount() + deliveryCost));</b>
+<b class="fc"><i>159</i>&nbsp;        System.out.println(&quot;================================&quot;);</b>
+<i>160</i>&nbsp;    }
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;    @Override public String toString() {
+<b class="fc"><i>163</i>&nbsp;        return String.format(&quot;Shopping cart with %d item(s)&quot;, items.size());</b>
+<i>164</i>&nbsp;    }
+<i>165</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 22:31</div>
+    <div style="float:right;">generated on 2019-07-10 17:35</div>
 </div>
 </body>
 </html>

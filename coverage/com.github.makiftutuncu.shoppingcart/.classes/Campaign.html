@@ -47,10 +47,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    84.4%
+    82.1%
   </span>
   <span class="absValue">
-    (38/ 45)
+    (32/ 39)
   </span>
 </td>
 </tr>
@@ -85,10 +85,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    84.8%
+    82.5%
   </span>
   <span class="absValue">
-    (39/ 46)
+    (33/ 40)
   </span>
 </td>
 </tr>
@@ -118,7 +118,7 @@
 <b class="fc"><i>18</i>&nbsp;        setCategory(category);</b>
 <b class="fc"><i>19</i>&nbsp;        setNumberOfItems(numberOfItems);</b>
 <b class="fc"><i>20</i>&nbsp;        setDiscountType(discountType);</b>
-<b class="fc"><i>21</i>&nbsp;    }</b>
+<i>21</i>&nbsp;    }
 <i>22</i>&nbsp;
 <i>23</i>&nbsp;    /**
 <i>24</i>&nbsp;     * Creates an amount-based campaign
@@ -174,7 +174,7 @@
 <i>74</i>&nbsp;    public int discountFor(int totalAmount) {
 <b class="fc"><i>75</i>&nbsp;        if (totalAmount &lt; 1) return 0;</b>
 <i>76</i>&nbsp;
-<b class="fc"><i>77</i>&nbsp;        switch (discountType) {</b>
+<b class="pc"><i>77</i>&nbsp;        switch (discountType) {</b>
 <b class="fc"><i>78</i>&nbsp;            case Rate:   return ((int) (totalAmount * rate));</b>
 <b class="fc"><i>79</i>&nbsp;            case Amount: return amount;</b>
 <b class="nc"><i>80</i>&nbsp;            default:     return 0;</b>
@@ -182,7 +182,7 @@
 <i>82</i>&nbsp;    }
 <i>83</i>&nbsp;
 <i>84</i>&nbsp;    @Override public boolean equals(Object o) {
-<b class="fc"><i>85</i>&nbsp;        if (this == o) return true;</b>
+<b class="pc"><i>85</i>&nbsp;        if (this == o) return true;</b>
 <b class="nc"><i>86</i>&nbsp;        if (!(o instanceof Campaign)) return false;</b>
 <i>87</i>&nbsp;
 <b class="nc"><i>88</i>&nbsp;        Campaign c = (Campaign) o;</b>
@@ -199,7 +199,7 @@
 <i>99</i>&nbsp;    }
 <i>100</i>&nbsp;
 <i>101</i>&nbsp;    @Override public String toString() {
-<b class="fc"><i>102</i>&nbsp;        switch (discountType) {</b>
+<b class="pc"><i>102</i>&nbsp;        switch (discountType) {</b>
 <b class="fc"><i>103</i>&nbsp;            case Rate:   return String.format(&quot;%.0f%% off for %d or more %s&quot;, rate * 100, numberOfItems, category.title());</b>
 <b class="fc"><i>104</i>&nbsp;            case Amount: return String.format(&quot;%s off for %d or more %s&quot;, MoneyPrinter.print(amount), numberOfItems, category.title());</b>
 <b class="nc"><i>105</i>&nbsp;            default:     return &quot;Campaign&quot;;</b>
@@ -209,35 +209,35 @@
 <i>109</i>&nbsp;    private void setCategory(Category category) {
 <b class="fc"><i>110</i>&nbsp;        if (category == null) throw new IllegalArgumentException(&quot;Campaign category cannot be null!&quot;);</b>
 <b class="fc"><i>111</i>&nbsp;        this.category = category;</b>
-<b class="fc"><i>112</i>&nbsp;    }</b>
+<i>112</i>&nbsp;    }
 <i>113</i>&nbsp;
 <i>114</i>&nbsp;    private void setNumberOfItems(int numberOfItems) {
 <b class="fc"><i>115</i>&nbsp;        if (numberOfItems &lt; 1) throw new IllegalArgumentException(&quot;Campaign number of items must be positive!&quot;);</b>
 <b class="fc"><i>116</i>&nbsp;        this.numberOfItems = numberOfItems;</b>
-<b class="fc"><i>117</i>&nbsp;    }</b>
+<i>117</i>&nbsp;    }
 <i>118</i>&nbsp;
 <i>119</i>&nbsp;    private void setAmount(int amount) {
 <b class="fc"><i>120</i>&nbsp;        if (amount &lt; 1) throw new IllegalArgumentException(&quot;Campaign amount must be positive!&quot;);</b>
 <b class="fc"><i>121</i>&nbsp;        this.amount = amount;</b>
 <b class="fc"><i>122</i>&nbsp;        this.rate = 0;</b>
-<b class="fc"><i>123</i>&nbsp;    }</b>
+<i>123</i>&nbsp;    }
 <i>124</i>&nbsp;
 <i>125</i>&nbsp;    private void setRate(double rate) {
 <b class="fc"><i>126</i>&nbsp;        if (rate &lt;= 0 || rate &gt; 1) throw new IllegalArgumentException(&quot;Campaign rate must be a valid positive percentage!&quot;);</b>
 <b class="fc"><i>127</i>&nbsp;        this.amount = 0;</b>
 <b class="fc"><i>128</i>&nbsp;        this.rate = rate;</b>
-<b class="fc"><i>129</i>&nbsp;    }</b>
+<i>129</i>&nbsp;    }
 <i>130</i>&nbsp;
 <i>131</i>&nbsp;    private void setDiscountType(DiscountType discountType) {
 <b class="fc"><i>132</i>&nbsp;        this.discountType = discountType;</b>
-<b class="fc"><i>133</i>&nbsp;    }</b>
+<i>133</i>&nbsp;    }
 <i>134</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 22:31</div>
+    <div style="float:right;">generated on 2019-07-10 17:35</div>
 </div>
 </body>
 </html>

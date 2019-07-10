@@ -61,7 +61,7 @@
     100%
   </span>
   <span class="absValue">
-    (22/ 22)
+    (18/ 18)
   </span>
 </td>
 </tr>
@@ -93,7 +93,7 @@
 <b class="fc"><i>19</i>&nbsp;    public Category(String title, Category parent) {</b>
 <b class="fc"><i>20</i>&nbsp;        setTitle(title);</b>
 <b class="fc"><i>21</i>&nbsp;        setParent(parent);</b>
-<b class="fc"><i>22</i>&nbsp;    }</b>
+<i>22</i>&nbsp;    }
 <i>23</i>&nbsp;
 <i>24</i>&nbsp;    /**
 <i>25</i>&nbsp;     * Creates a category without a parent
@@ -102,7 +102,7 @@
 <i>28</i>&nbsp;     */
 <i>29</i>&nbsp;    public Category(String title) {
 <b class="fc"><i>30</i>&nbsp;        this(title, null);</b>
-<b class="fc"><i>31</i>&nbsp;    }</b>
+<i>31</i>&nbsp;    }
 <i>32</i>&nbsp;
 <i>33</i>&nbsp;    /**
 <i>34</i>&nbsp;     * @return Title of the category
@@ -127,18 +127,18 @@
 <i>53</i>&nbsp;     */
 <i>54</i>&nbsp;    public boolean isChild(Category parent) {
 <b class="fc"><i>55</i>&nbsp;        if (this.parent == null) return false;</b>
-<b class="fc"><i>56</i>&nbsp;        if (parent == null)      return false;</b>
+<b class="pc"><i>56</i>&nbsp;        if (parent == null)      return false;</b>
 <i>57</i>&nbsp;
 <b class="fc"><i>58</i>&nbsp;        return this.parent.equals(parent) || this.parent.isChild(parent);</b>
 <i>59</i>&nbsp;    }
 <i>60</i>&nbsp;
 <i>61</i>&nbsp;    @Override public boolean equals(Object o) {
 <b class="fc"><i>62</i>&nbsp;        if (this == o) return true;</b>
-<b class="fc"><i>63</i>&nbsp;        if (!(o instanceof Category)) return false;</b>
+<b class="pc"><i>63</i>&nbsp;        if (!(o instanceof Category)) return false;</b>
 <i>64</i>&nbsp;
 <b class="fc"><i>65</i>&nbsp;        Category c = (Category) o;</b>
 <i>66</i>&nbsp;
-<b class="fc"><i>67</i>&nbsp;        return title.equals(c.title) &amp;&amp; parent().equals(c.parent());</b>
+<b class="pc"><i>67</i>&nbsp;        return title.equals(c.title) &amp;&amp; parent().equals(c.parent());</b>
 <i>68</i>&nbsp;    }
 <i>69</i>&nbsp;
 <i>70</i>&nbsp;    @Override public int hashCode() {
@@ -152,18 +152,18 @@
 <i>78</i>&nbsp;    private void setTitle(String title) {
 <b class="fc"><i>79</i>&nbsp;        if (title == null || title.trim().isEmpty()) throw new IllegalArgumentException(&quot;Category title cannot be null or empty!&quot;);</b>
 <b class="fc"><i>80</i>&nbsp;        this.title = title;</b>
-<b class="fc"><i>81</i>&nbsp;    }</b>
+<i>81</i>&nbsp;    }
 <i>82</i>&nbsp;
 <i>83</i>&nbsp;    private void setParent(Category parent) {
 <b class="fc"><i>84</i>&nbsp;        this.parent = parent;</b>
-<b class="fc"><i>85</i>&nbsp;    }</b>
+<i>85</i>&nbsp;    }
 <i>86</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 22:31</div>
+    <div style="float:right;">generated on 2019-07-10 17:35</div>
 </div>
 </body>
 </html>

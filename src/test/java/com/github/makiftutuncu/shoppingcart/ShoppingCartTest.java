@@ -3,8 +3,6 @@ package com.github.makiftutuncu.shoppingcart;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShoppingCartTest {
@@ -55,17 +53,17 @@ class ShoppingCartTest {
 
         cart.addProduct(bread, 1);
 
-        assertEquals(cart.totalAmountAfterDiscounts(), 100);
+        assertEquals(cart.checkout().finalAmount(), 100);
         assertEquals(cart.toString(), "Shopping cart with 1 item(s)");
 
         cart.addProduct(bread, 2);
 
-        assertEquals(cart.totalAmountAfterDiscounts(), 300);
+        assertEquals(cart.checkout().finalAmount(), 300);
         assertEquals(cart.toString(), "Shopping cart with 1 item(s)");
 
         cart.addProduct(water, 1);
 
-        assertEquals(cart.totalAmountAfterDiscounts(), 350);
+        assertEquals(cart.checkout().finalAmount(), 350);
         assertEquals(cart.toString(), "Shopping cart with 2 item(s)");
     }
 
@@ -76,31 +74,31 @@ class ShoppingCartTest {
     }
 
     @Test void addCampaigns() {
-        assertEquals(cart.campaignDiscount(), 0);
+        assertEquals(cart.checkout().totalCampaignDiscount(), 0);
 
         cart.addCampaigns(oneLiraOffForTwoFoods);
 
-        assertEquals(cart.campaignDiscount(), 0);
+        assertEquals(cart.checkout().totalCampaignDiscount(), 0);
 
         cart.addProduct(milk, 2);
 
-        assertEquals(cart.campaignDiscount(), 0);
+        assertEquals(cart.checkout().totalCampaignDiscount(), 0);
 
         cart.addProduct(bread, 1);
 
-        assertEquals(cart.campaignDiscount(), 100);
+        assertEquals(cart.checkout().totalCampaignDiscount(), 100);
 
         cart.addCampaigns(tenPercentOffTwoFruits);
 
-        assertEquals(cart.campaignDiscount(), 100);
+        assertEquals(cart.checkout().totalCampaignDiscount(), 100);
 
         cart.addProduct(apple, 5);
 
-        assertEquals(cart.campaignDiscount(), 100);
+        assertEquals(cart.checkout().totalCampaignDiscount(), 100);
 
         cart.addProduct(orange, 5);
 
-        assertEquals(cart.campaignDiscount(), 275);
+        assertEquals(cart.checkout().totalCampaignDiscount(), 275);
     }
 
     @Test void failToAddInvalidCoupon() {
@@ -110,112 +108,58 @@ class ShoppingCartTest {
     }
 
     @Test void addCoupons() {
-        assertEquals(cart.couponDiscount(), 0);
+        assertEquals(cart.checkout().totalCouponDiscount(), 0);
 
         cart.addCoupons(twoPercentOffCartForTwentyLiras);
 
-        assertEquals(cart.couponDiscount(), 0);
+        assertEquals(cart.checkout().totalCouponDiscount(), 0);
 
         cart.addProduct(milk, 2);
 
-        assertEquals(cart.couponDiscount(), 0);
+        assertEquals(cart.checkout().totalCouponDiscount(), 0);
 
         cart.addProduct(orange, 5);
 
-        assertEquals(cart.couponDiscount(), 40);
+        assertEquals(cart.checkout().totalCouponDiscount(), 40);
 
         cart.addCoupons(fiveLirasOffCartForTwentyFiveLiras);
 
-        assertEquals(cart.couponDiscount(), 40);
+        assertEquals(cart.checkout().totalCouponDiscount(), 40);
 
         cart.addProduct(apple, 4);
 
-        assertEquals(cart.couponDiscount(), 500);
+        assertEquals(cart.checkout().totalCouponDiscount(), 500);
     }
 
-    @Test void calculateAmountsWithDefaultCart() {
+    @Test void checkoutWithDefaultCart() {
         prepareDefaultCart();
 
-        int[] amounts = cart.calculateAmounts();
+        Checkout checkout = cart.checkout();
 
-        assertEquals(amounts[0], 2950);
-        assertEquals(amounts[1], 260);
-        assertEquals(amounts[2], 500);
+        assertEquals(checkout.totalAmount(), 2950);
+        assertEquals(checkout.totalCampaignDiscount(), 260);
+        assertEquals(checkout.totalCouponDiscount(), 500);
+        assertEquals(checkout.finalAmount(), 2190);
     }
 
-    @Test void calculateAmountsWithMultipleCampaignsOnSameCategory() {
+    @Test void checkoutWithMultipleCampaignsOnSameCategory() {
         Campaign foodCampaign1 = Campaign.ofAmount(food, 1, 100);
         Campaign foodCampaign2 = Campaign.ofRate(food, 1, 0.05);
 
         cart.addCampaigns(foodCampaign1, foodCampaign2).addProduct(orange, 5).addProduct(milk, 1);
 
-        int[] amounts = cart.calculateAmounts();
+        Checkout checkout = cart.checkout();
 
-        assertEquals(amounts[0], 1500);
-        assertEquals(amounts[1], 150);
-        assertEquals(amounts[2], 0);
-    }
-
-    @Test void campaignDiscount() {
-        prepareDefaultCart();
-
-        assertEquals(cart.campaignDiscount(), 260);
-    }
-
-    @Test void couponDiscount() {
-        prepareDefaultCart();
-
-        assertEquals(cart.couponDiscount(), 500);
-    }
-
-    @Test void totalAmountAfterDiscounts() {
-        prepareDefaultCart();
-
-        assertEquals(cart.totalAmountAfterDiscounts(), 2190);
-
-        reset();
-
-        Campaign hugeCampaign = Campaign.ofAmount(food, 1, 1000);
-        cart.addCampaigns(hugeCampaign).addProduct(bread, 1);
-        assertEquals(cart.totalAmountAfterDiscounts(), 0);
+        assertEquals(checkout.totalAmount(), 1500);
+        assertEquals(checkout.totalCampaignDiscount(), 150);
+        assertEquals(checkout.totalCouponDiscount(), 0);
+        assertEquals(checkout.finalAmount(), 1350);
     }
 
     @Test void deliveryCost() {
         prepareDefaultCart();
 
         assertEquals(cart.deliveryCost(), 749);
-    }
-
-    @Test void findBestCampaign() {
-        prepareDefaultCart();
-
-        Optional<Campaign> maybeFruitCampaign = cart.findBestCampaignFor(fruit);
-        assertTrue(maybeFruitCampaign.isPresent());
-        assertEquals(maybeFruitCampaign.get(), tenPercentOffTwoFruits);
-
-        reset();
-
-        assertFalse(cart.findBestCampaignFor(fruit).isPresent());
-
-        cart.addProduct(bread, 3)
-            .addProduct(apple, 4)
-            .addCampaigns(oneLiraOffForTwoFoods, tenPercentOffTwoFruits);
-
-        assertFalse(cart.findBestCampaignFor(fruit).isPresent());
-    }
-
-    @Test void findBestCoupon() {
-        prepareDefaultCart();
-
-        assertFalse(cart.findBestCoupon(1000).isPresent());
-
-        Optional<Coupon> maybeCoupon1 = cart.findBestCoupon(2000);
-        assertTrue(maybeCoupon1.isPresent());
-        assertEquals(maybeCoupon1.get(), twoPercentOffCartForTwentyLiras);
-
-        Optional<Coupon> maybeCoupon2 = cart.findBestCoupon(3000);
-        assertTrue(maybeCoupon2.isPresent());
-        assertEquals(maybeCoupon2.get(), fiveLirasOffCartForTwentyFiveLiras);
     }
 
     @Test void print() {

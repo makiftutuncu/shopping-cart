@@ -58,10 +58,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    95.2%
+    94.4%
   </span>
   <span class="absValue">
-    (20/ 21)
+    (17/ 18)
   </span>
 </td>
 </tr>
@@ -92,7 +92,7 @@
 <b class="fc"><i>18</i>&nbsp;    public CartItem(Product product, int quantity) {</b>
 <b class="fc"><i>19</i>&nbsp;        setProduct(product);</b>
 <b class="fc"><i>20</i>&nbsp;        setQuantity(quantity);</b>
-<b class="fc"><i>21</i>&nbsp;    }</b>
+<i>21</i>&nbsp;    }
 <i>22</i>&nbsp;
 <i>23</i>&nbsp;    /**
 <i>24</i>&nbsp;     * @return Product of the cart item
@@ -129,11 +129,11 @@
 <i>55</i>&nbsp;
 <i>56</i>&nbsp;    @Override public boolean equals(Object o) {
 <b class="fc"><i>57</i>&nbsp;        if (this == o) return true;</b>
-<b class="fc"><i>58</i>&nbsp;        if (!(o instanceof CartItem)) return false;</b>
+<b class="pc"><i>58</i>&nbsp;        if (!(o instanceof CartItem)) return false;</b>
 <i>59</i>&nbsp;
 <b class="fc"><i>60</i>&nbsp;        CartItem ci = (CartItem) o;</b>
 <i>61</i>&nbsp;
-<b class="fc"><i>62</i>&nbsp;        return quantity == ci.quantity &amp;&amp; product.equals(ci.product);</b>
+<b class="pc"><i>62</i>&nbsp;        return quantity == ci.quantity &amp;&amp; product.equals(ci.product);</b>
 <i>63</i>&nbsp;    }
 <i>64</i>&nbsp;
 <i>65</i>&nbsp;    @Override public int hashCode() {
@@ -147,19 +147,19 @@
 <i>73</i>&nbsp;    private void setProduct(Product product) {
 <b class="fc"><i>74</i>&nbsp;        if (product == null) throw new IllegalArgumentException(&quot;Cart item product cannot be null!&quot;);</b>
 <b class="fc"><i>75</i>&nbsp;        this.product = product;</b>
-<b class="fc"><i>76</i>&nbsp;    }</b>
+<i>76</i>&nbsp;    }
 <i>77</i>&nbsp;
 <i>78</i>&nbsp;    private void setQuantity(int quantity) {
 <b class="fc"><i>79</i>&nbsp;        if (quantity &lt; 1) throw new IllegalArgumentException(&quot;Cart item quantity must be positive!&quot;);</b>
 <b class="fc"><i>80</i>&nbsp;        this.quantity = quantity;</b>
-<b class="fc"><i>81</i>&nbsp;    }</b>
+<i>81</i>&nbsp;    }
 <i>82</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 22:31</div>
+    <div style="float:right;">generated on 2019-07-10 17:35</div>
 </div>
 </body>
 </html>

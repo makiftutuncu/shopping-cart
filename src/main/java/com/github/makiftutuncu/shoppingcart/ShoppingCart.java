@@ -1,7 +1,6 @@
 package com.github.makiftutuncu.shoppingcart;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Represents a shopping cart to which {@link com.github.makiftutuncu.shoppingcart.Product}s,
@@ -13,7 +12,6 @@ public class ShoppingCart {
     private Map<Category, List<CartItem>> groupedItems = new HashMap<>();
     private List<Campaign> campaigns                   = new ArrayList<>();
     private List<Coupon> coupons                       = new ArrayList<>();
-    private Set<Campaign> usedCampaigns                = new HashSet<>();
 
     private DeliveryCostCalculator deliveryCostCalculator;
 
@@ -86,71 +84,12 @@ public class ShoppingCart {
     }
 
     /**
-     * Calculates cart total, total campaign discounts and total coupon discounts by processing all items in the cart
+     * Processes all items, campaigns and coupons
      *
-     * @return An int array of size 3 containing cart total, total campaign discounts and total coupon discounts respectively
+     * @return A {@link com.github.makiftutuncu.shoppingcart.Checkout} containing calculated values
      */
-    public int[] calculateAmounts() {
-        int totalAmount = 0;
-        int totalCampaignDiscount = 0;
-
-        usedCampaigns.clear();
-
-        for (Map.Entry<Category, List<CartItem>> entry : groupedItems.entrySet()) {
-            int totalAmountForCategory =
-                    entry.getValue()
-                         .stream()
-                         .map(CartItem::totalAmount)
-                         .reduce(0, Integer::sum);
-
-            totalAmount += totalAmountForCategory;
-
-            int campaignDiscount = findBestCampaignFor(entry.getKey())
-                    .map(campaign -> {
-                        usedCampaigns.add(campaign);
-                        return campaign.discountFor(totalAmountForCategory);
-                    })
-                    .orElse(0);
-
-            totalCampaignDiscount += campaignDiscount;
-        }
-
-        int cartAmount = totalAmount - totalCampaignDiscount;
-
-        int couponDiscount = findBestCoupon(cartAmount).map(coupon -> coupon.discountFor(cartAmount)).orElse(0);
-
-        return new int[] { totalAmount, totalCampaignDiscount, couponDiscount };
-    }
-
-    /**
-     * Calculates total campaign discounts by processing all items in the cart
-     *
-     * @return Total campaign discounts
-     */
-    public int campaignDiscount() {
-        int[] amounts = calculateAmounts();
-        return amounts[1];
-    }
-
-    /**
-     * Calculates total coupon discounts by processing all items in the cart
-     *
-     * @return Total coupon discounts
-     */
-    public int couponDiscount() {
-        int[] amounts = calculateAmounts();
-        return amounts[2];
-    }
-
-    /**
-     * Calculates cart total after applying total campaign discounts and total coupon discounts by processing all items in the cart
-     *
-     * @return Cart total after applying total campaign discounts and total coupon discounts
-     */
-    public int totalAmountAfterDiscounts() {
-        int[] amounts = calculateAmounts();
-
-        return Math.max(amounts[0] - amounts[1] - amounts[2], 0);
+    public Checkout checkout() {
+        return Checkout.calculate(items, groupedItems, campaigns, coupons);
     }
 
     /**
@@ -163,64 +102,22 @@ public class ShoppingCart {
     }
 
     /**
-     * Finds campaign that makes the most discount for given category
-     *
-     * @param category Category for which best campaign is sought
-     *
-     * @return Best campaign optionally if found or `Optional.empty()`
-     */
-    public Optional<Campaign> findBestCampaignFor(Category category) {
-        List<CartItem> itemsInCategory =
-                items.values()
-                        .stream()
-                        .filter(item -> item.product().category().isChild(category) || item.product().category().equals(category))
-                        .collect(Collectors.toList());
-
-        int numberOfItemsInCategory = itemsInCategory.size();
-        int totalAmountForCategory  = itemsInCategory.stream().map(CartItem::totalAmount).reduce(0, Integer::sum);
-
-        return campaigns.stream()
-                .filter(campaign -> !usedCampaigns.contains(campaign) && (category.isChild(campaign.category()) || campaign.category().equals(category)) && numberOfItemsInCategory >= campaign.numberOfItems())
-                .max(Comparator.comparingInt(c -> c.discountFor(totalAmountForCategory)));
-    }
-
-    /**
-     * Finds coupon that makes the most discount for given cart amount
-     *
-     * @param cartAmount Cart amount for which best coupon is sought
-     *
-     * @return Best coupon optionally if found or `Optional.empty()`
-     */
-    public Optional<Coupon> findBestCoupon(int cartAmount) {
-        return coupons.stream()
-                .filter(c -> c.minimumAmount() <= cartAmount)
-                .max(Comparator.comparingInt(c -> c.discountFor(cartAmount)));
-    }
-
-    /**
      * Prints out categories of items with their quantities and prices,
      * applied discounts by campaigns and coupons,
      * delivery cost and the final amount of the cart
      */
     public void print() {
-        int totalAmount = 0;
-        int totalCampaignDiscount = 0;
-
-        usedCampaigns.clear();
+        Checkout checkout = checkout();
 
         for (Map.Entry<Category, List<CartItem>> entry : groupedItems.entrySet()) {
             Category category              = entry.getKey();
             List<CartItem> itemsInCategory = entry.getValue();
-
-            int temporaryTotalAmountForCategory = 0;
 
             System.out.println("================================");
             System.out.println(category.title());
             System.out.println("================================");
 
             for (CartItem item : itemsInCategory) {
-                temporaryTotalAmountForCategory += item.totalAmount();
-
                 Product product = item.product();
 
                 System.out.printf("%s x %d\n",  product.title(), item.quantity());
@@ -235,46 +132,30 @@ public class ShoppingCart {
                 System.out.println();
             }
 
-            final int totalAmountForCategory = temporaryTotalAmountForCategory;
-
-            totalAmount += totalAmountForCategory;
-
-            int campaignDiscount = findBestCampaignFor(category)
-                    .map(campaign -> {
-                        int discount = campaign.discountFor(totalAmountForCategory);
-                        usedCampaigns.add(campaign);
-                        System.out.printf("Applied Campaign: %s\n", campaign.toString());
-                        System.out.printf("Discount        : -%s\n\n", MoneyPrinter.print(discount));
-                        return discount;
-                    })
-                    .orElse(0);
-
-            totalCampaignDiscount += campaignDiscount;
+            Optional.ofNullable(checkout.campaignsByCategory().get(category)).ifPresent(campaign -> {
+                System.out.printf("Applied Campaign: %s\n", campaign.toString());
+                System.out.printf("Discount        : -%s\n\n", MoneyPrinter.print(checkout.campaignDiscountsByCategory().getOrDefault(category, 0)));
+            });
         }
 
-        int cartAmount   = Math.max(totalAmount - totalCampaignDiscount, 0);
         int deliveryCost = deliveryCost();
 
         System.out.println("================================");
-        System.out.println("Total Amount      :  " + MoneyPrinter.print(totalAmount));
+        System.out.println("Total Amount      :  " + MoneyPrinter.print(checkout.totalAmount()));
         System.out.println("Delivery Cost     :  " + MoneyPrinter.print(deliveryCost));
 
-        if (totalCampaignDiscount > 0) {
-            System.out.println("Campaign Discounts: -" + MoneyPrinter.print(totalCampaignDiscount));
+        if (checkout.totalCampaignDiscount() > 0) {
+            System.out.println("Campaign Discounts: -" + MoneyPrinter.print(checkout.totalCampaignDiscount()));
         }
 
-        int couponDiscount = findBestCoupon(cartAmount).map(coupon -> {
-            int discount = coupon.discountFor(cartAmount);
+        checkout.appliedCoupon().ifPresent(coupon -> {
             System.out.println();
             System.out.printf("Applied Coupon: %s\n", coupon.toString());
-            System.out.printf("Discount      : -%s\n", MoneyPrinter.print(discount));
-            return discount;
-        }).orElse(0);
-
-        int finalAmount = Math.max(cartAmount - couponDiscount, 0) + deliveryCost;
+            System.out.printf("Discount      : -%s\n", MoneyPrinter.print(checkout.totalCouponDiscount()));
+        });
 
         System.out.println();
-        System.out.println("Final Amount: " + MoneyPrinter.print(finalAmount));
+        System.out.println("Final Amount: " + MoneyPrinter.print(checkout.finalAmount() + deliveryCost));
         System.out.println("================================");
     }
 

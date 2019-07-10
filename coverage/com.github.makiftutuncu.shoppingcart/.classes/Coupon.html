@@ -47,10 +47,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    93.9%
+    92.9%
   </span>
   <span class="absValue">
-    (31/ 33)
+    (26/ 28)
   </span>
 </td>
 </tr>
@@ -85,10 +85,10 @@
 </td>
 <td class="coverageStat">
   <span class="percent">
-    94.1%
+    93.1%
   </span>
   <span class="absValue">
-    (32/ 34)
+    (27/ 29)
   </span>
 </td>
 </tr>
@@ -114,7 +114,7 @@
 <b class="fc"><i>14</i>&nbsp;    private Coupon(int minimumAmount, DiscountType discountType) {</b>
 <b class="fc"><i>15</i>&nbsp;        setMinimumAmount(minimumAmount);</b>
 <b class="fc"><i>16</i>&nbsp;        setDiscountType(discountType);</b>
-<b class="fc"><i>17</i>&nbsp;    }</b>
+<i>17</i>&nbsp;    }
 <i>18</i>&nbsp;
 <i>19</i>&nbsp;    /**
 <i>20</i>&nbsp;     * Creates an amount-based coupon
@@ -161,7 +161,7 @@
 <i>61</i>&nbsp;    public int discountFor(int cartAmount) {
 <b class="fc"><i>62</i>&nbsp;        if (cartAmount &lt; minimumAmount) return 0;</b>
 <i>63</i>&nbsp;
-<b class="fc"><i>64</i>&nbsp;        switch (discountType) {</b>
+<b class="pc"><i>64</i>&nbsp;        switch (discountType) {</b>
 <b class="fc"><i>65</i>&nbsp;            case Rate:   return ((int) (cartAmount * rate));</b>
 <b class="fc"><i>66</i>&nbsp;            case Amount: return amount;</b>
 <b class="nc"><i>67</i>&nbsp;            default:     return 0;</b>
@@ -169,7 +169,7 @@
 <i>69</i>&nbsp;    }
 <i>70</i>&nbsp;
 <i>71</i>&nbsp;    @Override public String toString() {
-<b class="fc"><i>72</i>&nbsp;        switch (discountType) {</b>
+<b class="pc"><i>72</i>&nbsp;        switch (discountType) {</b>
 <b class="fc"><i>73</i>&nbsp;            case Rate:   return String.format(&quot;%.0f%% off on the cart for %s or more&quot;, rate * 100, MoneyPrinter.print(minimumAmount));</b>
 <b class="fc"><i>74</i>&nbsp;            case Amount: return String.format(&quot;%s off on the cart for %s or more&quot;, MoneyPrinter.print(amount), MoneyPrinter.print(minimumAmount));</b>
 <b class="nc"><i>75</i>&nbsp;            default:     return &quot;Coupon&quot;;</b>
@@ -179,30 +179,30 @@
 <i>79</i>&nbsp;    private void setMinimumAmount(int minimumAmount) {
 <b class="fc"><i>80</i>&nbsp;        if (minimumAmount &lt; 1) throw new IllegalArgumentException(&quot;Coupon minimum amount must be positive!&quot;);</b>
 <b class="fc"><i>81</i>&nbsp;        this.minimumAmount = minimumAmount;</b>
-<b class="fc"><i>82</i>&nbsp;    }</b>
+<i>82</i>&nbsp;    }
 <i>83</i>&nbsp;
 <i>84</i>&nbsp;    private void setAmount(int amount) {
 <b class="fc"><i>85</i>&nbsp;        if (amount &lt; 1) throw new IllegalArgumentException(&quot;Coupon amount must be positive!&quot;);</b>
 <b class="fc"><i>86</i>&nbsp;        this.amount = amount;</b>
 <b class="fc"><i>87</i>&nbsp;        this.rate = 0;</b>
-<b class="fc"><i>88</i>&nbsp;    }</b>
+<i>88</i>&nbsp;    }
 <i>89</i>&nbsp;
 <i>90</i>&nbsp;    private void setRate(double rate) {
 <b class="fc"><i>91</i>&nbsp;        if (rate &lt;= 0 || rate &gt; 1) throw new IllegalArgumentException(&quot;Coupon rate must be a valid positive percentage!&quot;);</b>
 <b class="fc"><i>92</i>&nbsp;        this.amount = 0;</b>
 <b class="fc"><i>93</i>&nbsp;        this.rate = rate;</b>
-<b class="fc"><i>94</i>&nbsp;    }</b>
+<i>94</i>&nbsp;    }
 <i>95</i>&nbsp;
 <i>96</i>&nbsp;    private void setDiscountType(DiscountType discountType) {
 <b class="fc"><i>97</i>&nbsp;        this.discountType = discountType;</b>
-<b class="fc"><i>98</i>&nbsp;    }</b>
+<i>98</i>&nbsp;    }
 <i>99</i>&nbsp;}
 </div>
 </div>
 
 <div class="footer">
     
-    <div style="float:right;">generated on 2019-07-09 22:31</div>
+    <div style="float:right;">generated on 2019-07-10 17:35</div>
 </div>
 </body>
 </html>
